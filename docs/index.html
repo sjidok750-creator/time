@@ -205,27 +205,29 @@
     }
     .calc-btn {
       flex: 1;
-      padding: 22px 18px;
-      border: 2px solid #FF1744;
+      align-self: stretch;
+      padding: 0 18px;
+      border: 1px solid rgba(255,255,255,.12);
       border-radius: var(--radius);
-      background: linear-gradient(145deg, #ffffff 0%, #ffe0ec 55%, #ffb3c6 100%);
+      background: var(--surface);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       -webkit-tap-highlight-color: transparent;
       transition: opacity .15s, transform .12s;
-      box-shadow: 0 6px 28px rgba(255,23,68,.28), inset 0 1px 0 rgba(255,255,255,.85);
+      box-shadow: 0 4px 20px rgba(0,0,0,.35);
     }
-    .calc-btn:active { opacity: .85; transform: scale(.98); }
+    .calc-btn:active { opacity: .75; transform: scale(.98); }
     .calc-btn-main {
       font-family: 'Black Han Sans', sans-serif;
-      font-size: 28px;
+      font-size: 30px;
       font-weight: 400;
-      letter-spacing: 4px;
+      letter-spacing: 7px;
       line-height: 1;
-      color: #C2001F;
-      text-shadow: 0 2px 6px rgba(194,0,31,.18);
+      color: var(--text);
+      width: 100%;
+      text-align: center;
     }
 
     /* ══ iOS-style Bottom Sheet Modal ═══════════════════════ */
@@ -615,7 +617,7 @@
            src="https://pngimg.com/uploads/hello_kitty/hello_kitty_PNG3.png"
            alt="Hello Kitty">
       <button class="calc-btn" id="calcBtn">
-        <span class="calc-btn-main">계산하기</span>
+        <span class="calc-btn-main">CALCULATE</span>
       </button>
     </div>
 
