@@ -1,29 +1,90 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Background — cream, no rounded corners so OS can apply its own mask -->
-  <rect width="512" height="512" fill="#EDE8DC"/>
+  <defs>
+    <!-- Deep aviation blue gradient background -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1B4FD8"/>
+      <stop offset="100%" stop-color="#0A2FA8"/>
+    </linearGradient>
+    <!-- Soft white glow on clock face -->
+    <radialGradient id="clockFace" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#DCE8FF" stop-opacity="1"/>
+    </radialGradient>
+    <!-- Clock face subtle shadow -->
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+    <!-- Airplane shadow -->
+    <filter id="planeShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000033" flood-opacity="0.30"/>
+    </filter>
+  </defs>
 
-  <!-- Fuselage: nose upper-right, tail lower-left -->
-  <path fill="none" stroke="#1C1C1E" stroke-linecap="round" stroke-linejoin="round" stroke-width="34"
-    d="M 96 308
-       C 140 286 210 252 282 218
-       C 332 194 372 178 400 170
-       C 424 164 438 182 432 206
-       C 428 224 412 234 392 242
-       L 312 276
-       L 276 362
-       L 238 362
-       L 276 276
-       Z"/>
+  <!-- Background -->
+  <rect width="512" height="512" fill="url(#bg)"/>
 
-  <!-- Main wing -->
-  <path fill="none" stroke="#1C1C1E" stroke-linecap="round" stroke-linejoin="round" stroke-width="30"
-    d="M 272 230 L 206 136 L 162 150 L 232 242"/>
+  <!-- Subtle grid lines (very faint) -->
+  <line x1="256" y1="40" x2="256" y2="472" stroke="#ffffff" stroke-opacity="0.04" stroke-width="1"/>
+  <line x1="40" y1="256" x2="472" y2="256" stroke="#ffffff" stroke-opacity="0.04" stroke-width="1"/>
 
-  <!-- Tail fin -->
-  <path fill="none" stroke="#1C1C1E" stroke-linecap="round" stroke-linejoin="round" stroke-width="26"
-    d="M 116 295 L 108 256 L 142 272"/>
+  <!-- Clock outer ring (white glow border) -->
+  <circle cx="256" cy="240" r="162" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="8" filter="url(#shadow)"/>
 
-  <!-- Wheels (filled, like in the reference image) -->
-  <circle cx="250" cy="406" r="36" fill="#1C1C1E"/>
-  <circle cx="318" cy="406" r="36" fill="#1C1C1E"/>
+  <!-- Clock face -->
+  <circle cx="256" cy="240" r="154" fill="url(#clockFace)" filter="url(#shadow)"/>
+
+  <!-- Clock hour ticks -->
+  <g stroke="#1B4FD8" stroke-linecap="round" opacity="0.6">
+    <!-- 12 o'clock -->
+    <line x1="256" y1="104" x2="256" y2="122" stroke-width="7"/>
+    <!-- 3 o'clock -->
+    <line x1="392" y1="240" x2="374" y2="240" stroke-width="7"/>
+    <!-- 6 o'clock -->
+    <line x1="256" y1="376" x2="256" y2="358" stroke-width="7"/>
+    <!-- 9 o'clock -->
+    <line x1="120" y1="240" x2="138" y2="240" stroke-width="7"/>
+    <!-- Minor ticks -->
+    <line x1="334" y1="112" x2="325" y2="128" stroke-width="4" opacity="0.4"/>
+    <line x1="388" y1="166" x2="372" y2="175" stroke-width="4" opacity="0.4"/>
+    <line x1="388" y1="314" x2="372" y2="305" stroke-width="4" opacity="0.4"/>
+    <line x1="334" y1="368" x2="325" y2="352" stroke-width="4" opacity="0.4"/>
+    <line x1="178" y1="368" x2="187" y2="352" stroke-width="4" opacity="0.4"/>
+    <line x1="124" y1="314" x2="140" y2="305" stroke-width="4" opacity="0.4"/>
+    <line x1="124" y1="166" x2="140" y2="175" stroke-width="4" opacity="0.4"/>
+    <line x1="178" y1="112" x2="187" y2="128" stroke-width="4" opacity="0.4"/>
+  </g>
+
+  <!-- Hour hand (pointing to ~8) -->
+  <line x1="256" y1="240" x2="198" y2="296"
+        stroke="#1B4FD8" stroke-width="14" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- Minute hand (pointing to ~12) -->
+  <line x1="256" y1="240" x2="256" y2="142"
+        stroke="#1B4FD8" stroke-width="10" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- Center dot -->
+  <circle cx="256" cy="240" r="10" fill="#1B4FD8"/>
+  <circle cx="256" cy="240" r="4" fill="#FFFFFF"/>
+
+  <!-- Airplane silhouette (small, bottom area, white) -->
+  <g transform="translate(256,410) scale(0.52)" filter="url(#planeShadow)">
+    <!-- Fuselage -->
+    <ellipse cx="0" cy="0" rx="72" ry="16" fill="#FFFFFF" opacity="0.95"/>
+    <!-- Nose cone -->
+    <ellipse cx="72" cy="0" rx="20" ry="10" fill="#FFFFFF" opacity="0.95"/>
+    <!-- Main wings -->
+    <path d="M -10 0 L -52 -52 L -72 -44 L -36 0 Z" fill="#FFFFFF" opacity="0.95"/>
+    <path d="M -10 0 L -52 52 L -72 44 L -36 0 Z" fill="#FFFFFF" opacity="0.95"/>
+    <!-- Tail fin (vertical) -->
+    <path d="M -62 0 L -88 -30 L -80 0 Z" fill="#FFFFFF" opacity="0.95"/>
+    <!-- Tail fin (horizontal) -->
+    <path d="M -62 0 L -82 -20 L -84 -8 L -68 0 Z" fill="#FFFFFF" opacity="0.85"/>
+    <path d="M -62 0 L -82 20 L -84 8 L -68 0 Z" fill="#FFFFFF" opacity="0.85"/>
+  </g>
+
+  <!-- Bottom label area - subtle "REST" text -->
+  <text x="256" y="486" text-anchor="middle"
+        font-family="-apple-system, SF Pro Display, Helvetica Neue, sans-serif"
+        font-size="28" font-weight="700" letter-spacing="6"
+        fill="#FFFFFF" fill-opacity="0.55">REST</text>
 </svg>
