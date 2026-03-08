@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background — cream, no rounded corners so OS can apply its own mask -->
+  <rect width="512" height="512" fill="#EDE8DC"/>
+
+  <!-- Fuselage: nose upper-right, tail lower-left -->
+  <path fill="none" stroke="#1C1C1E" stroke-linecap="round" stroke-linejoin="round" stroke-width="34"
+    d="M 96 308
+       C 140 286 210 252 282 218
+       C 332 194 372 178 400 170
+       C 424 164 438 182 432 206
+       C 428 224 412 234 392 242
+       L 312 276
+       L 276 362
+       L 238 362
+       L 276 276
+       Z"/>
+
+  <!-- Main wing -->
+  <path fill="none" stroke="#1C1C1E" stroke-linecap="round" stroke-linejoin="round" stroke-width="30"
+    d="M 272 230 L 206 136 L 162 150 L 232 242"/>
+
+  <!-- Tail fin -->
+  <path fill="none" stroke="#1C1C1E" stroke-linecap="round" stroke-linejoin="round" stroke-width="26"
+    d="M 116 295 L 108 256 L 142 272"/>
+
+  <!-- Wheels (filled, like in the reference image) -->
+  <circle cx="250" cy="406" r="36" fill="#1C1C1E"/>
+  <circle cx="318" cy="406" r="36" fill="#1C1C1E"/>
+</svg>
