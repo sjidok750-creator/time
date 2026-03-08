@@ -104,11 +104,9 @@
       overflow: hidden;
     }
     .card-label {
-      font-size: 11px;
+      font-size: 15px;
       font-weight: 700;
-      letter-spacing: 1.8px;
-      text-transform: uppercase;
-      color: var(--sub);
+      letter-spacing: -0.3px;
       padding: 16px 18px 0;
     }
 
@@ -120,11 +118,9 @@
       border: none;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
-      padding: 18px 20px 22px;
+      padding: 14px 20px 20px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
     }
     .time-display-btn:active .td-time { opacity: .6; }
     .td-time {
@@ -136,17 +132,6 @@
       line-height: 1;
       transition: opacity .12s;
     }
-    .td-edit {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--primary);
-      flex-shrink: 0;
-      opacity: .7;
-    }
-    .td-edit svg { width: 16px; height: 16px; }
 
     /* ══ Service Stepper ═════════════════════════════════════ */
     .service-body { padding: 10px 20px 22px; }
@@ -568,37 +553,23 @@
 
     <!-- Start Time -->
     <div class="card">
-      <div class="card-label">시작 시간</div>
+      <div class="card-label" style="color:var(--teamA)">시작 시간</div>
       <button class="time-display-btn" id="startTimeBtn">
         <span class="td-time" id="startTimeDisplay">10:00</span>
-        <span class="td-edit">
-          수정
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
-        </span>
       </button>
     </div>
 
     <!-- End Time -->
     <div class="card">
-      <div class="card-label">종료 시간</div>
+      <div class="card-label" style="color:var(--teamB)">종료 시간</div>
       <button class="time-display-btn" id="endTimeBtn">
         <span class="td-time" id="endTimeDisplay">12:00</span>
-        <span class="td-edit">
-          수정
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
-        </span>
       </button>
     </div>
 
     <!-- Service Time -->
     <div class="card">
-      <div class="card-label" style="text-align:center">서비스 시간</div>
+      <div class="card-label" style="text-align:center; color:var(--service)">서비스 시간</div>
       <div class="service-body">
         <div class="svc-row">
           <button class="stepper-btn" id="decBtn">−</button>
