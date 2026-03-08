@@ -2,466 +2,828 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>휴식시간 편성 계산기</title>
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#3399DC" />
+  <meta name="theme-color" content="#07101F" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="휴식계산" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --teamA:   #3399DC;
-      --service: #FF9400;
-      --teamB:   #AD52DE;
-      --bg:      #f2f2f7;
-      --card-bg: rgba(255,255,255,0.72);
-      --radius:  16px;
-      --text:    #1c1c1e;
-      --sub:     #6e6e73;
+      --bg:      #07101F;
+      --surface: #0D1B2E;
+      --s2:      #172233;
+      --border:  rgba(255,255,255,.07);
+      --text:    #EEF2F8;
+      --sub:     #5A6E84;
+      --primary: #4A90E2;
+      --teamA:   #34AADC;
+      --service: #FF9500;
+      --teamB:   #AF52DE;
+      --green:   #30D158;
+      --radius:  20px;
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg:      #1c1c1e;
-        --card-bg: rgba(44,44,46,0.80);
-        --text:    #f5f5f7;
-        --sub:     #8e8e93;
-      }
-    }
+    html, body { height: 100%; overflow: hidden; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display',
+                   'Helvetica Neue', sans-serif;
       background: var(--bg);
+      background-image:
+        radial-gradient(ellipse 70% 50% at 10% 10%, rgba(74,144,226,.08) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 90% 90%, rgba(175,82,222,.06) 0%, transparent 55%);
       color: var(--text);
-      min-height: 100dvh;
     }
 
-    header {
-      padding: 20px 20px 4px;
+    /* ══ Screen system ═══════════════════════════════════════ */
+    #appWrap {
+      width: 100%;
+      height: 100dvh;
+      position: relative;
+      overflow: hidden;
     }
-    header h1 {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
+    .screen {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      transition: transform .42s cubic-bezier(.4,0,.2,1);
+      will-change: transform;
     }
+    .screen-right  { transform: translateX(100%);  pointer-events: none; }
+    .screen-left   { transform: translateX(-25%);  pointer-events: none; }
+    .screen-active { transform: translateX(0);     pointer-events: auto; }
 
+    /* ══ Layout ══════════════════════════════════════════════ */
+    .page-wrap {
+      max-width: 460px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
     .stack {
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      padding: 12px 20px 48px;
-      max-width: 480px;
+      gap: 12px;
+      padding-top: 18px;
+    }
+
+    /* ══ Input Header ════════════════════════════════════════ */
+    .input-header {
+      max-width: 460px;
       margin: 0 auto;
+      padding: 56px 20px 0;
+    }
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+    .input-header h1 {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.1;
     }
 
-    /* ── Card ─────────────────────────────────── */
+    /* ══ Card base ═══════════════════════════════════════════ */
     .card {
-      background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+      overflow: hidden;
     }
-
     .card-label {
-      font-size: 15px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
       color: var(--sub);
-      margin-bottom: 8px;
+      padding: 16px 18px 0;
     }
 
-    /* ── Time Picker ──────────────────────────── */
-    .time-picker {
+    /* ══ Drum Picker (iOS style) ═══════════════════════════ */
+    .picker-row {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 220px;
+      padding: 0 16px;
+      margin-bottom: 14px;
+    }
+    .p-highlight {
+      position: absolute;
+      pointer-events: none;
+      left: 16px; right: 16px;
+      top: 50%; transform: translateY(-50%);
+      height: 44px;
+      background: rgba(74,144,226,.13);
+      border: 1px solid rgba(74,144,226,.30);
+      border-radius: 11px;
+      z-index: 2;
+    }
+    .p-fade {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+      background: linear-gradient(
+        to bottom,
+        var(--surface) 0%,
+        transparent 28%,
+        transparent 72%,
+        var(--surface) 100%
+      );
+    }
+    .drum-sep {
+      flex-shrink: 0;
+      width: 22px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 8px 0 4px;
+      font-size: 34px;
+      font-weight: 300;
+      color: var(--sub);
+      z-index: 4;
+      position: relative;
     }
-    .time-picker select {
-      font-size: 40px;
+    .drum-track {
+      flex: 1;
+      height: 220px;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      z-index: 1;
+    }
+    .drum-track::-webkit-scrollbar { display: none; }
+    .drum-spacer { height: 88px; flex-shrink: 0; }
+    .drum-item {
+      height: 44px;
+      scroll-snap-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
-      background: transparent;
-      border: none;
       color: var(--text);
-      appearance: none;
-      -webkit-appearance: none;
-      text-align: center;
-      cursor: pointer;
-      outline: none;
-      padding: 2px 4px;
-      border-radius: 8px;
-    }
-    .time-picker select:focus { background: rgba(128,128,128,.12); }
-    .time-sep {
-      font-size: 40px;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1;
-      margin-bottom: 2px;
-    }
-
-    /* ── Service Time ─────────────────────────── */
-    .service-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 36px;
-      padding: 12px 0 4px;
-    }
-    .stepper-btn {
-      width: 52px; height: 52px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(142,142,147,.18);
-      font-size: 24px;
-      font-weight: 600;
-      color: var(--text);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background .15s;
       user-select: none;
     }
-    .stepper-btn:active { background: rgba(142,142,147,.35); }
-    .service-num {
-      font-size: 64px;
+
+    /* ══ Service Stepper ═════════════════════════════════════ */
+    .service-body { padding: 10px 20px 22px; }
+    .svc-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 6px;
+    }
+    .stepper-btn {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--s2);
+      font-size: 28px;
+      color: var(--primary);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .12s, transform .1s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      line-height: 1;
+    }
+    .stepper-btn:active { background: rgba(74,144,226,.2); transform: scale(.9); }
+    .svc-center { text-align: center; min-width: 100px; }
+    .svc-num {
+      font-size: 68px;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
       line-height: 1;
-      min-width: 80px;
-      text-align: center;
+      letter-spacing: -2px;
     }
-    .service-unit {
-      font-size: 14px;
+    .svc-unit {
+      font-size: 12px;
       color: var(--sub);
-      text-align: center;
-      margin-top: 4px;
-      margin-bottom: 8px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 3px;
     }
 
-    /* ── Calculate Button ─────────────────────── */
-    .calc-btn {
-      width: 100%;
-      padding: 20px;
-      border: none;
-      border-radius: var(--radius);
-      background: linear-gradient(90deg, var(--teamA), var(--teamB));
-      color: #fff;
-      font-size: 20px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity .15s, transform .1s;
-    }
-    .calc-btn:active { opacity: .85; transform: scale(.98); }
-
-    /* ── Error banner ─────────────────────────── */
+    /* ══ Error ═══════════════════════════════════════════════ */
     .error-banner {
-      background: rgba(255,59,48,.12);
-      border: 1.5px solid rgba(255,59,48,.35);
+      background: rgba(255,59,48,.1);
+      border: 1px solid rgba(255,59,48,.25);
       border-radius: var(--radius);
-      padding: 14px 16px;
-      color: #ff3b30;
-      font-size: 15px;
+      padding: 14px 18px;
+      color: #FF453A;
+      font-size: 14px;
       font-weight: 500;
       display: none;
     }
     .error-banner.show { display: block; }
 
-    /* ── Result Section ───────────────────────── */
-    #result { display: none; }
-    #result.show { display: contents; }
-
-    .result-header {
-      font-size: 22px;
-      font-weight: 700;
-      padding: 4px 0 2px;
-    }
-
-    /* Timeline bar */
-    .timeline-wrap { padding: 4px 0 2px; }
-    .timeline-bar {
-      height: 52px;
-      border-radius: 10px;
-      overflow: hidden;
-      display: flex;
-    }
-    .bar-seg { height: 100%; transition: width .4s ease; }
-    .bar-a { background: var(--teamA); }
-    .bar-s { background: var(--service); }
-    .bar-b { background: var(--teamB); }
-
-    .timeline-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 6px;
-      font-size: 11px;
-      color: var(--sub);
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* Schedule cards */
-    .sched-card {
+    /* ══ Calc Button ═════════════════════════════════════════ */
+    .calc-btn {
+      width: 100%;
+      padding: 20px;
+      border: none;
       border-radius: var(--radius);
-      padding: 18px 20px;
-    }
-    .sched-card .sc-title {
-      font-size: 14px;
+      background: linear-gradient(135deg, #4A90E2 0%, #6C5CE7 100%);
+      color: #fff;
+      font-size: 18px;
       font-weight: 700;
-      margin-bottom: 4px;
+      letter-spacing: -0.2px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity .15s, transform .12s;
+      box-shadow: 0 6px 28px rgba(74,144,226,.3);
     }
-    .sched-card .sc-time {
-      font-size: 36px;
+    .calc-btn:active { opacity: .82; transform: scale(.98); }
+
+    /* ══ Result Header ═══════════════════════════════════════ */
+    .result-header-wrap {
+      max-width: 460px;
+      margin: 0 auto;
+      padding: 56px 20px 0;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 17px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0 0 20px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .back-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+    .result-eyebrow {
+      font-size: 11px;
       font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--sub);
+      margin-bottom: 6px;
+    }
+    .result-h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+
+    /* Metric chips */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .metric-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 13px 8px 12px;
+      text-align: center;
+    }
+    .mc-val {
+      font-size: 19px;
+      font-weight: 800;
       font-variant-numeric: tabular-nums;
       letter-spacing: -0.5px;
       line-height: 1.1;
     }
-    .sched-card .sc-min {
-      font-size: 17px;
+    .mc-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
       color: var(--sub);
-      margin-top: 2px;
+      margin-top: 4px;
+    }
+    .c-blue   { color: var(--primary); }
+    .c-amber  { color: var(--service); }
+    .c-green  { color: var(--green); }
+
+    /* ══ Section label ═══════════════════════════════════════ */
+    .sec-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--sub);
+      margin-bottom: 10px;
     }
 
-    .card-a { background: rgba(51,153,220,.12); border: 1.5px solid rgba(51,153,220,.35); }
-    .card-s { background: rgba(255,148,0,.12);  border: 1.5px solid rgba(255,148,0,.35); }
-    .card-b { background: rgba(173,82,222,.12); border: 1.5px solid rgba(173,82,222,.35); }
-    .title-a { color: var(--teamA); }
-    .title-s { color: var(--service); }
-    .title-b { color: var(--teamB); }
-
-    /* Summary row */
-    .summary-row {
+    /* ══ Timeline card ═══════════════════════════════════════ */
+    .timeline-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px 14px;
+    }
+    .tl-bar {
+      height: 54px;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+    }
+    .seg { height: 100%; transition: width .55s cubic-bezier(.4,0,.2,1); }
+    .seg-a { background: linear-gradient(90deg, #1A8AB8, #34AADC); }
+    .seg-s { background: linear-gradient(90deg, #CC7800, #FF9500); }
+    .seg-b { background: linear-gradient(90deg, #8A3AAF, #AF52DE); }
+    .tl-times {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 9px;
+      font-size: 10px;
+      color: var(--sub);
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+    }
+    .tl-legend {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .legend-item {
       display: flex;
       align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--sub);
+      font-weight: 600;
+    }
+    .lgd-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ══ Schedule cards ══════════════════════════════════════ */
+    .sched-card {
+      border-radius: var(--radius);
+      padding: 16px 18px 18px;
+      border: 1px solid transparent;
+    }
+    .sc-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .sc-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .sc-range {
+      font-size: 21px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+    }
+    .sc-dur {
+      font-size: 13px;
+      color: var(--sub);
+      margin-top: 5px;
+      font-weight: 500;
+    }
+    .sched-a { background: rgba(52,170,220,.08);  border-color: rgba(52,170,220,.20); }
+    .sched-s { background: rgba(255,149,0,.08);   border-color: rgba(255,149,0,.20); }
+    .sched-b { background: rgba(175,82,222,.08);  border-color: rgba(175,82,222,.20); }
+    .col-a { color: var(--teamA); }
+    .col-s { color: var(--service); }
+    .col-b { color: var(--teamB); }
+
+    /* ══ Balance card ════════════════════════════════════════ */
+    .balance-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+    }
+    .bal-track {
+      height: 8px;
+      border-radius: 4px;
+      background: var(--s2);
+      margin: 10px 0 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .bal-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      background: linear-gradient(90deg, var(--teamA), var(--teamB));
+      border-radius: 4px;
+      transition: width .55s cubic-bezier(.4,0,.2,1);
+    }
+    .bal-lbls {
+      display: flex;
       justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .bal-a { color: var(--teamA); }
+    .bal-b { color: var(--teamB); }
+
+    /* ══ Summary table ═══════════════════════════════════════ */
+    .summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+    }
+    .sum-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
       font-size: 14px;
     }
-    .summary-row .label { color: var(--sub); }
-    .summary-row .value { font-weight: 700; }
+    .sum-row + .sum-row { border-top: 1px solid var(--border); }
+    .sum-lbl { color: var(--sub); font-weight: 500; }
+    .sum-val { font-weight: 700; }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>휴식시간 편성</h1>
-</header>
+<div id="appWrap">
 
-<div class="stack">
+<!-- ════════════════════════════════ INPUT SCREEN ════════ -->
+<div id="scrInput" class="screen screen-active">
 
-  <!-- Start Time -->
-  <div class="card">
-    <div class="card-label">시작 시간</div>
-    <div class="time-picker">
-      <select id="startHour" aria-label="시작 시간(시)"></select>
-      <span class="time-sep">:</span>
-      <select id="startMin" aria-label="시작 시간(분)"></select>
+  <div class="input-header">
+    <div class="eyebrow">Rest Planner</div>
+    <h1>휴식시간<br>편성 계산기</h1>
+  </div>
+
+  <div class="page-wrap">
+  <div class="stack">
+
+    <!-- Start Time -->
+    <div class="card">
+      <div class="card-label">시작 시간</div>
+      <div class="picker-row">
+        <div class="p-highlight"></div>
+        <div class="p-fade"></div>
+        <div class="drum-track" id="sH"></div>
+        <div class="drum-sep">:</div>
+        <div class="drum-track" id="sM"></div>
+      </div>
+    </div>
+
+    <!-- End Time -->
+    <div class="card">
+      <div class="card-label">종료 시간</div>
+      <div class="picker-row">
+        <div class="p-highlight"></div>
+        <div class="p-fade"></div>
+        <div class="drum-track" id="eH"></div>
+        <div class="drum-sep">:</div>
+        <div class="drum-track" id="eM"></div>
+      </div>
+    </div>
+
+    <!-- Service Time -->
+    <div class="card">
+      <div class="card-label" style="text-align:center">서비스 시간</div>
+      <div class="service-body">
+        <div class="svc-row">
+          <button class="stepper-btn" id="decBtn">−</button>
+          <div class="svc-center">
+            <div class="svc-num" id="svcNum">30</div>
+            <div class="svc-unit">minutes</div>
+          </div>
+          <button class="stepper-btn" id="incBtn">＋</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div class="error-banner" id="errBanner"></div>
+
+    <!-- CTA -->
+    <button class="calc-btn" id="calcBtn">
+      계산하기
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"/>
+        <polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </button>
+
+  </div>
+  </div>
+</div><!-- #scrInput -->
+
+
+<!-- ════════════════════════════════ RESULT SCREEN ════════ -->
+<div id="scrResult" class="screen screen-right">
+
+  <div class="result-header-wrap">
+    <button class="back-btn" id="backBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Back
+    </button>
+    <div class="result-eyebrow">Schedule Analysis</div>
+    <div class="result-h1">Rest Period<br>Breakdown</div>
+
+    <div class="metrics-row">
+      <div class="metric-chip">
+        <div class="mc-val c-blue"  id="mTotal">—</div>
+        <div class="mc-label">Total</div>
+      </div>
+      <div class="metric-chip">
+        <div class="mc-val c-amber" id="mService">—</div>
+        <div class="mc-label">Service</div>
+      </div>
+      <div class="metric-chip">
+        <div class="mc-val c-green" id="mBalance">—</div>
+        <div class="mc-label">Balance</div>
+      </div>
     </div>
   </div>
 
-  <!-- End Time -->
-  <div class="card">
-    <div class="card-label">종료 시간</div>
-    <div class="time-picker">
-      <select id="endHour" aria-label="종료 시간(시)"></select>
-      <span class="time-sep">:</span>
-      <select id="endMin" aria-label="종료 시간(분)"></select>
-    </div>
-  </div>
-
-  <!-- Service Time -->
-  <div class="card">
-    <div class="card-label" style="text-align:center">서비스 시간</div>
-    <div class="service-row">
-      <button class="stepper-btn" id="decBtn" aria-label="감소">−</button>
-      <span class="service-num" id="serviceNum">30</span>
-      <button class="stepper-btn" id="incBtn" aria-label="증가">＋</button>
-    </div>
-    <div class="service-unit">분</div>
-  </div>
-
-  <!-- Error -->
-  <div class="error-banner" id="errorBanner"></div>
-
-  <!-- Calculate -->
-  <button class="calc-btn" id="calcBtn">계산하기</button>
-
-  <!-- Result -->
-  <div id="result">
-    <div class="result-header">편성 결과</div>
+  <div class="page-wrap">
+  <div class="stack">
 
     <!-- Timeline -->
-    <div class="card timeline-wrap">
-      <div class="timeline-bar">
-        <div class="bar-seg bar-a" id="barA"></div>
-        <div class="bar-seg bar-s" id="barS"></div>
-        <div class="bar-seg bar-b" id="barB"></div>
+    <div class="timeline-card">
+      <div class="sec-label">Timeline Overview</div>
+      <div class="tl-bar">
+        <div class="seg seg-a" id="barA"></div>
+        <div class="seg seg-s" id="barS"></div>
+        <div class="seg seg-b" id="barB"></div>
       </div>
-      <div class="timeline-labels">
-        <span id="lblStart"></span>
-        <span id="lblSvcStart"></span>
-        <span id="lblSvcEnd"></span>
-        <span id="lblEnd"></span>
+      <div class="tl-times">
+        <span id="lbStart"></span>
+        <span id="lbSvcS"></span>
+        <span id="lbSvcE"></span>
+        <span id="lbEnd"></span>
+      </div>
+      <div class="tl-legend">
+        <div class="legend-item">
+          <div class="lgd-dot" style="background:var(--teamA)"></div>Team A
+        </div>
+        <div class="legend-item">
+          <div class="lgd-dot" style="background:var(--service)"></div>Service
+        </div>
+        <div class="legend-item">
+          <div class="lgd-dot" style="background:var(--teamB)"></div>Team B
+        </div>
       </div>
     </div>
 
-    <!-- A조 -->
-    <div class="sched-card card-a">
-      <div class="sc-title title-a">A조 휴식</div>
-      <div class="sc-time" id="timeA"></div>
-      <div class="sc-min" id="minA"></div>
+    <!-- Team A -->
+    <div class="sched-card sched-a">
+      <div class="sc-tag col-a">
+        <div class="sc-dot" style="background:var(--teamA)"></div>
+        Team A · Rest Period
+      </div>
+      <div class="sc-range col-a" id="rA">—</div>
+      <div class="sc-dur" id="dA">—</div>
     </div>
 
-    <!-- 서비스 -->
-    <div class="sched-card card-s">
-      <div class="sc-title title-s">서비스</div>
-      <div class="sc-time" id="timeSvc"></div>
-      <div class="sc-min" id="minSvc"></div>
+    <!-- Service -->
+    <div class="sched-card sched-s">
+      <div class="sc-tag col-s">
+        <div class="sc-dot" style="background:var(--service)"></div>
+        Service · Active Period
+      </div>
+      <div class="sc-range col-s" id="rS">—</div>
+      <div class="sc-dur" id="dS">—</div>
     </div>
 
-    <!-- B조 -->
-    <div class="sched-card card-b">
-      <div class="sc-title title-b">B조 휴식</div>
-      <div class="sc-time" id="timeB"></div>
-      <div class="sc-min" id="minB"></div>
+    <!-- Team B -->
+    <div class="sched-card sched-b">
+      <div class="sc-tag col-b">
+        <div class="sc-dot" style="background:var(--teamB)"></div>
+        Team B · Rest Period
+      </div>
+      <div class="sc-range col-b" id="rB">—</div>
+      <div class="sc-dur" id="dB">—</div>
+    </div>
+
+    <!-- Balance -->
+    <div class="balance-card">
+      <div class="sec-label">Team Balance</div>
+      <div class="bal-track">
+        <div class="bal-fill" id="balFill"></div>
+      </div>
+      <div class="bal-lbls">
+        <span class="bal-a" id="balA">Team A</span>
+        <span class="bal-b" id="balB">Team B</span>
+      </div>
     </div>
 
     <!-- Summary -->
-    <div class="card summary-row">
-      <span class="label">🕐 전체 시간</span>
-      <span class="value" id="summaryText"></span>
+    <div class="summary-card">
+      <div class="sec-label">Schedule Summary</div>
+      <div class="sum-row">
+        <span class="sum-lbl">Duty Start</span>
+        <span class="sum-val" id="sStart">—</span>
+      </div>
+      <div class="sum-row">
+        <span class="sum-lbl">Duty End</span>
+        <span class="sum-val" id="sEnd">—</span>
+      </div>
+      <div class="sum-row">
+        <span class="sum-lbl">Total Duration</span>
+        <span class="sum-val" id="sTotal">—</span>
+      </div>
+      <div class="sum-row">
+        <span class="sum-lbl">Service Period</span>
+        <span class="sum-val" id="sSvc">—</span>
+      </div>
+      <div class="sum-row">
+        <span class="sum-lbl">Rest Coverage</span>
+        <span class="sum-val" id="sCoverage">—</span>
+      </div>
     </div>
-  </div>
 
-</div><!-- .stack -->
+  </div>
+  </div>
+</div><!-- #scrResult -->
+
+</div><!-- #appWrap -->
 
 <script>
-  // ── Populate selects ───────────────────────────────────────
-  function pad(n) { return String(n).padStart(2, '0'); }
+  // ── Drum Picker ──────────────────────────────────────────
+  const ITEM_H = 44;
 
-  function fill(id, count, offset = 0) {
-    const sel = document.getElementById(id);
+  function buildDrum(id, count, initial) {
+    const el = document.getElementById(id);
+    const top = document.createElement('div');
+    top.className = 'drum-spacer';
+    el.appendChild(top);
     for (let i = 0; i < count; i++) {
-      const o = document.createElement('option');
-      o.value = i + offset;
-      o.textContent = pad(i + offset);
-      sel.appendChild(o);
+      const div = document.createElement('div');
+      div.className = 'drum-item';
+      div.textContent = String(i).padStart(2, '0');
+      el.appendChild(div);
     }
+    const bot = document.createElement('div');
+    bot.className = 'drum-spacer';
+    el.appendChild(bot);
+    // Set scroll after next frame so layout is complete
+    requestAnimationFrame(() => { el.scrollTop = initial * ITEM_H; });
   }
 
-  fill('startHour', 24); fill('startMin', 60);
-  fill('endHour',   24); fill('endMin',   60);
+  function drumVal(id) {
+    return Math.round(document.getElementById(id).scrollTop / ITEM_H);
+  }
 
-  // Defaults: 10:00 ~ 12:00
-  document.getElementById('startHour').value = 10;
-  document.getElementById('startMin').value  = 0;
-  document.getElementById('endHour').value   = 12;
-  document.getElementById('endMin').value    = 0;
+  buildDrum('sH', 24, 10);
+  buildDrum('sM', 60,  0);
+  buildDrum('eH', 24, 12);
+  buildDrum('eM', 60,  0);
 
-  // ── Service stepper ────────────────────────────────────────
-  let serviceMinutes = 30;
-  const serviceNumEl = document.getElementById('serviceNum');
-
+  // ── Service Stepper ──────────────────────────────────────
+  let svcMin = 30;
+  const svcNumEl = document.getElementById('svcNum');
   document.getElementById('decBtn').addEventListener('click', () => {
-    if (serviceMinutes > 1) { serviceMinutes--; serviceNumEl.textContent = serviceMinutes; }
+    if (svcMin > 1) svcNumEl.textContent = --svcMin;
   });
   document.getElementById('incBtn').addEventListener('click', () => {
-    serviceMinutes++;
-    serviceNumEl.textContent = serviceMinutes;
+    if (svcMin < 999) svcNumEl.textContent = ++svcMin;
   });
 
-  // ── Helpers ────────────────────────────────────────────────
-  function toMinutes(h, m) { return h * 60 + m; }
+  // ── Helpers ──────────────────────────────────────────────
+  function pad(n) { return String(n).padStart(2, '0'); }
 
-  function fmtTime(totalMin) {
-    const h = Math.floor(totalMin / 60) % 24;
-    const m = totalMin % 60;
-    const suffix = h < 12 ? '오전' : '오후';
-    const h12 = h % 12 === 0 ? 12 : h % 12;
-    return `${suffix} ${pad(h12)}:${pad(m)}`;
+  function fmt12(total) {
+    const h    = Math.floor(total / 60) % 24;
+    const m    = total % 60;
+    const ampm = h < 12 ? 'AM' : 'PM';
+    const h12  = h % 12 || 12;
+    return `${pad(h12)}:${pad(m)} ${ampm}`;
   }
 
-  function timeRange(startMin, endMin) {
-    return `${fmtTime(startMin)} ~ ${fmtTime(endMin)}`;
+  function fmtDur(min) {
+    if (min < 60) return `${min} min`;
+    const h = Math.floor(min / 60), m = min % 60;
+    return m ? `${h}h ${m}m` : `${h}h`;
   }
 
-  // ── Calculate ──────────────────────────────────────────────
-  document.getElementById('calcBtn').addEventListener('click', calculate);
+  // ── Screen transitions ───────────────────────────────────
+  const scrI = document.getElementById('scrInput');
+  const scrR = document.getElementById('scrResult');
 
-  function calculate() {
-    const sh = +document.getElementById('startHour').value;
-    const sm = +document.getElementById('startMin').value;
-    const eh = +document.getElementById('endHour').value;
-    const em = +document.getElementById('endMin').value;
+  function showResult() {
+    scrI.classList.replace('screen-active', 'screen-left');
+    scrR.classList.replace('screen-right',  'screen-active');
+    scrR.scrollTop = 0;
+  }
+  function showInput() {
+    scrR.classList.replace('screen-active', 'screen-right');
+    scrI.classList.replace('screen-left',   'screen-active');
+  }
 
-    const startMin = toMinutes(sh, sm);
-    const endMin   = toMinutes(eh, em);
-    const total    = endMin - startMin;
+  document.getElementById('backBtn').addEventListener('click', showInput);
 
-    const errorEl  = document.getElementById('errorBanner');
-    const resultEl = document.getElementById('result');
+  // ── Calculate ────────────────────────────────────────────
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    const sh = drumVal('sH'), sm = drumVal('sM');
+    const eh = drumVal('eH'), em = drumVal('eM');
 
-    errorEl.classList.remove('show');
-    resultEl.classList.remove('show');
+    const start = sh * 60 + sm;
+    const end   = eh * 60 + em;
+    const total = end - start;
+
+    const errEl = document.getElementById('errBanner');
+    errEl.classList.remove('show');
 
     if (total <= 0) {
-      errorEl.textContent = '종료 시간이 시작 시간보다 이전입니다.';
-      errorEl.classList.add('show');
+      errEl.textContent = '종료 시간이 시작 시간보다 이전입니다.';
+      errEl.classList.add('show');
       return;
     }
-    if (serviceMinutes >= total) {
-      errorEl.textContent = `서비스 시간(${serviceMinutes}분)이 전체 시간(${total}분)을 초과합니다.`;
-      errorEl.classList.add('show');
+    if (svcMin >= total) {
+      errEl.textContent =
+        `서비스 시간(${svcMin}분)이 전체 시간(${total}분)을 초과합니다.`;
+      errEl.classList.add('show');
       return;
     }
 
-    // Core logic (matches Swift — integer truncating division)
-    const midPoint    = Math.trunc(total / 2);
-    const svcStart    = midPoint - Math.trunc(serviceMinutes / 2);
-    const svcEnd      = svcStart + serviceMinutes;
-    const teamAMin    = svcStart;
-    const teamBMin    = total - svcEnd;
+    // Core calculation
+    const mid  = Math.trunc(total / 2);
+    const svcS = mid - Math.trunc(svcMin / 2);
+    const svcE = svcS + svcMin;
+    const tA   = svcS;
+    const tB   = total - svcE;
 
-    const absStart    = startMin;
-    const absSvcStart = startMin + svcStart;
-    const absSvcEnd   = startMin + svcEnd;
-    const absEnd      = endMin;
+    const absS  = start;
+    const absSS = start + svcS;
+    const absSE = start + svcE;
+    const absE  = end;
 
-    // Timeline bar widths
-    document.getElementById('barA').style.width = (teamAMin   / total * 100) + '%';
-    document.getElementById('barS').style.width = (serviceMinutes / total * 100) + '%';
-    document.getElementById('barB').style.width = (teamBMin   / total * 100) + '%';
+    // Timeline
+    document.getElementById('barA').style.width = (tA     / total * 100) + '%';
+    document.getElementById('barS').style.width = (svcMin / total * 100) + '%';
+    document.getElementById('barB').style.width = (tB     / total * 100) + '%';
 
-    // Timeline labels
-    document.getElementById('lblStart').textContent    = fmtTime(absStart);
-    document.getElementById('lblSvcStart').textContent = fmtTime(absSvcStart);
-    document.getElementById('lblSvcEnd').textContent   = fmtTime(absSvcEnd);
-    document.getElementById('lblEnd').textContent      = fmtTime(absEnd);
+    document.getElementById('lbStart').textContent = fmt12(absS);
+    document.getElementById('lbSvcS').textContent  = fmt12(absSS);
+    document.getElementById('lbSvcE').textContent  = fmt12(absSE);
+    document.getElementById('lbEnd').textContent   = fmt12(absE);
 
     // Schedule cards
-    document.getElementById('timeA').textContent   = timeRange(absStart, absSvcStart);
-    document.getElementById('minA').textContent    = teamAMin + '분';
-    document.getElementById('timeSvc').textContent = timeRange(absSvcStart, absSvcEnd);
-    document.getElementById('minSvc').textContent  = serviceMinutes + '분';
-    document.getElementById('timeB').textContent   = timeRange(absSvcEnd, absEnd);
-    document.getElementById('minB').textContent    = teamBMin + '분';
+    document.getElementById('rA').textContent = `${fmt12(absS)}  –  ${fmt12(absSS)}`;
+    document.getElementById('dA').textContent = `Duration: ${fmtDur(tA)}`;
+    document.getElementById('rS').textContent = `${fmt12(absSS)}  –  ${fmt12(absSE)}`;
+    document.getElementById('dS').textContent = `Duration: ${fmtDur(svcMin)}`;
+    document.getElementById('rB').textContent = `${fmt12(absSE)}  –  ${fmt12(absE)}`;
+    document.getElementById('dB').textContent = `Duration: ${fmtDur(tB)}`;
 
-    document.getElementById('summaryText').textContent = `${total}분  (서비스 ${serviceMinutes}분)`;
+    // Metrics
+    document.getElementById('mTotal').textContent   = fmtDur(total);
+    document.getElementById('mService').textContent = fmtDur(svcMin);
 
-    resultEl.classList.add('show');
-    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+    const restTotal = tA + tB;
+    const pctA  = restTotal > 0 ? Math.round(tA / restTotal * 100) : 50;
+    const even  = Math.abs(tA - tB) <= 1;
+    const balEl = document.getElementById('mBalance');
+    balEl.textContent = even ? 'Even' : `${pctA}/${100 - pctA}`;
+    balEl.className   = 'mc-val ' + (even ? 'c-green' : 'c-amber');
+
+    // Balance bar
+    document.getElementById('balFill').style.width = (tA / restTotal * 100) + '%';
+    document.getElementById('balA').textContent    = `Team A  ${fmtDur(tA)}`;
+    document.getElementById('balB').textContent    = `${fmtDur(tB)}  Team B`;
+
+    // Summary
+    document.getElementById('sStart').textContent    = fmt12(absS);
+    document.getElementById('sEnd').textContent      = fmt12(absE);
+    document.getElementById('sTotal').textContent    = fmtDur(total);
+    document.getElementById('sSvc').textContent      = fmtDur(svcMin);
+    document.getElementById('sCoverage').textContent =
+      Math.round((total - svcMin) / total * 100) + '% of duty period';
+
+    showResult();
+  });
 </script>
 <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 </body>
 </html>
