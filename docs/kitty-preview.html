@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <style>
+    body { background:#1a0015; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; gap:40px; flex-wrap:wrap; }
+    .label { color:#FFB3CF; font-family:sans-serif; font-size:12px; text-align:center; margin-top:8px; }
+  </style>
+</head>
+<body>
+
+  <!-- 58px — button size -->
+  <div>
+    <svg width="58" height="58" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="border-radius:50%;overflow:hidden;display:block;">
+      <circle cx="50" cy="50" r="50" fill="#FFF0F5"/>
+      <circle cx="24" cy="27" r="13" fill="#fff"/>
+      <circle cx="24" cy="27" r="8"  fill="#FFB3CF"/>
+      <circle cx="76" cy="27" r="13" fill="#fff"/>
+      <circle cx="76" cy="27" r="8"  fill="#FFB3CF"/>
+      <ellipse cx="50" cy="58" rx="36" ry="34" fill="#fff"/>
+      <line x1="16" y1="56" x2="38" y2="59" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="16" y1="63" x2="38" y2="63" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="16" y1="70" x2="38" y2="67" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="62" y1="59" x2="84" y2="56" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="62" y1="63" x2="84" y2="63" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="62" y1="67" x2="84" y2="70" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+      <ellipse cx="39" cy="53" rx="4.5" ry="5.5" fill="#111"/>
+      <ellipse cx="61" cy="53" rx="4.5" ry="5.5" fill="#111"/>
+      <ellipse cx="50" cy="64" rx="4" ry="3" fill="#FFD700"/>
+      <path d="M76,20 C76,20 70,10 64,13 C61,16 63,23 68,21 C71,20 74,21 76,20Z" fill="#E91E8C"/>
+      <path d="M76,20 C76,20 82,10 88,13 C91,16 89,23 84,21 C81,20 78,21 76,20Z" fill="#E91E8C"/>
+      <circle cx="76" cy="20" r="4" fill="#C2185B"/>
+    </svg>
+    <div class="label">58px (버튼 크기)</div>
+  </div>
+
+  <!-- 200px — large preview -->
+  <div>
+    <svg width="200" height="200" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="border-radius:50%;overflow:hidden;display:block;">
+      <circle cx="50" cy="50" r="50" fill="#FFF0F5"/>
+      <circle cx="24" cy="27" r="13" fill="#fff"/>
+      <circle cx="24" cy="27" r="8"  fill="#FFB3CF"/>
+      <circle cx="76" cy="27" r="13" fill="#fff"/>
+      <circle cx="76" cy="27" r="8"  fill="#FFB3CF"/>
+      <ellipse cx="50" cy="58" rx="36" ry="34" fill="#fff"/>
+      <line x1="16" y1="56" x2="38" y2="59" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="16" y1="63" x2="38" y2="63" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="16" y1="70" x2="38" y2="67" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="62" y1="59" x2="84" y2="56" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="62" y1="63" x2="84" y2="63" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="62" y1="67" x2="84" y2="70" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+      <ellipse cx="39" cy="53" rx="4.5" ry="5.5" fill="#111"/>
+      <ellipse cx="61" cy="53" rx="4.5" ry="5.5" fill="#111"/>
+      <ellipse cx="50" cy="64" rx="4" ry="3" fill="#FFD700"/>
+      <path d="M76,20 C76,20 70,10 64,13 C61,16 63,23 68,21 C71,20 74,21 76,20Z" fill="#E91E8C"/>
+      <path d="M76,20 C76,20 82,10 88,13 C91,16 89,23 84,21 C81,20 78,21 76,20Z" fill="#E91E8C"/>
+      <circle cx="76" cy="20" r="4" fill="#C2185B"/>
+    </svg>
+    <div class="label">200px (확대)</div>
+  </div>
+
+  <!-- Button context -->
+  <div>
+    <button style="
+      background:linear-gradient(145deg,#1a0015 0%,#7B1551 50%,#C2185B 100%);
+      border:1px solid rgba(255,120,180,.28);
+      border-radius:20px;
+      padding:14px 22px;
+      display:flex;align-items:center;gap:20px;
+      cursor:pointer;
+      box-shadow:0 8px 32px rgba(194,24,91,.5);
+    ">
+      <svg width="58" height="58" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="border-radius:50%;overflow:hidden;flex-shrink:0;">
+        <circle cx="50" cy="50" r="50" fill="#FFF0F5"/>
+        <circle cx="24" cy="27" r="13" fill="#fff"/>
+        <circle cx="24" cy="27" r="8"  fill="#FFB3CF"/>
+        <circle cx="76" cy="27" r="13" fill="#fff"/>
+        <circle cx="76" cy="27" r="8"  fill="#FFB3CF"/>
+        <ellipse cx="50" cy="58" rx="36" ry="34" fill="#fff"/>
+        <line x1="16" y1="56" x2="38" y2="59" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="16" y1="63" x2="38" y2="63" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="16" y1="70" x2="38" y2="67" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="62" y1="59" x2="84" y2="56" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="62" y1="63" x2="84" y2="63" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="62" y1="67" x2="84" y2="70" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
+        <ellipse cx="39" cy="53" rx="4.5" ry="5.5" fill="#111"/>
+        <ellipse cx="61" cy="53" rx="4.5" ry="5.5" fill="#111"/>
+        <ellipse cx="50" cy="64" rx="4" ry="3" fill="#FFD700"/>
+        <path d="M76,20 C76,20 70,10 64,13 C61,16 63,23 68,21 C71,20 74,21 76,20Z" fill="#E91E8C"/>
+        <path d="M76,20 C76,20 82,10 88,13 C91,16 89,23 84,21 C81,20 78,21 76,20Z" fill="#E91E8C"/>
+        <circle cx="76" cy="20" r="4" fill="#C2185B"/>
+      </svg>
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;">
+        <span style="font-family:sans-serif;font-size:21px;font-weight:800;letter-spacing:3.5px;color:#fff;">CALCULATE</span>
+        <span style="font-family:sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,180,210,.8);">Rest Period</span>
+      </div>
+    </button>
+    <div class="label">실제 버튼</div>
+  </div>
+
+</body>
+</html>
