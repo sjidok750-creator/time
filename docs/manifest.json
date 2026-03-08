@@ -1,0 +1,25 @@
+{
+  "name": "휴식시간 편성 계산기",
+  "short_name": "휴식계산",
+  "description": "A조·B조 휴식 시간을 자동으로 편성합니다",
+  "start_url": "/time/",
+  "scope": "/time/",
+  "display": "standalone",
+  "background_color": "#EDE8DC",
+  "theme_color": "#3399DC",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
