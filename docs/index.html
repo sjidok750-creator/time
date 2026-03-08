@@ -35,9 +35,6 @@
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display',
                    'Helvetica Neue', sans-serif;
       background: var(--bg);
-      background-image:
-        radial-gradient(ellipse 70% 50% at 10% 10%, rgba(74,144,226,.08) 0%, transparent 55%),
-        radial-gradient(ellipse 60% 50% at 90% 90%, rgba(175,82,222,.06) 0%, transparent 55%);
       color: var(--text);
     }
 
@@ -53,6 +50,11 @@
       inset: 0;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      background: var(--bg);          /* ← 이게 없으면 투명하게 겹침 */
+      background-image:
+        radial-gradient(ellipse 70% 50% at 10% 10%, rgba(74,144,226,.08) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 90% 90%, rgba(175,82,222,.06) 0%, transparent 55%);
+      background-attachment: local;
       transition: transform .42s cubic-bezier(.4,0,.2,1);
       will-change: transform;
     }
@@ -110,74 +112,41 @@
       padding: 16px 18px 0;
     }
 
-    /* ══ Drum Picker (iOS style) ═══════════════════════════ */
-    .picker-row {
-      position: relative;
+    /* ══ Time Display Button ═════════════════════════════════
+       평소에는 시간만 크게 표시. 탭하면 바텀시트 오픈.         */
+    .time-display-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      padding: 18px 20px 22px;
       display: flex;
       align-items: center;
-      height: 220px;
-      padding: 0 16px;
-      margin-bottom: 14px;
+      justify-content: space-between;
+      gap: 12px;
     }
-    .p-highlight {
-      position: absolute;
-      pointer-events: none;
-      left: 16px; right: 16px;
-      top: 50%; transform: translateY(-50%);
-      height: 44px;
-      background: rgba(74,144,226,.13);
-      border: 1px solid rgba(74,144,226,.30);
-      border-radius: 11px;
-      z-index: 2;
-    }
-    .p-fade {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 3;
-      background: linear-gradient(
-        to bottom,
-        var(--surface) 0%,
-        transparent 28%,
-        transparent 72%,
-        var(--surface) 100%
-      );
-    }
-    .drum-sep {
-      flex-shrink: 0;
-      width: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 34px;
-      font-weight: 300;
-      color: var(--sub);
-      z-index: 4;
-      position: relative;
-    }
-    .drum-track {
-      flex: 1;
-      height: 220px;
-      overflow-y: scroll;
-      scroll-snap-type: y mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      z-index: 1;
-    }
-    .drum-track::-webkit-scrollbar { display: none; }
-    .drum-spacer { height: 88px; flex-shrink: 0; }
-    .drum-item {
-      height: 44px;
-      scroll-snap-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
+    .time-display-btn:active .td-time { opacity: .6; }
+    .td-time {
+      font-size: 52px;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
+      letter-spacing: -2px;
       color: var(--text);
-      user-select: none;
+      line-height: 1;
+      transition: opacity .12s;
     }
+    .td-edit {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--primary);
+      flex-shrink: 0;
+      opacity: .7;
+    }
+    .td-edit svg { width: 16px; height: 16px; }
 
     /* ══ Service Stepper ═════════════════════════════════════ */
     .service-body { padding: 10px 20px 22px; }
@@ -252,6 +221,132 @@
     }
     .calc-btn:active { opacity: .82; transform: scale(.98); }
 
+    /* ══ iOS-style Bottom Sheet Modal ═══════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      background: rgba(0,0,0,.55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-sheet {
+      background: #162030;
+      border-top: 1px solid rgba(255,255,255,.1);
+      border-radius: 20px 20px 0 0;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      transform: translateY(100%);
+      transition: transform .38s cubic-bezier(.4,0,.2,1);
+    }
+    .modal-overlay.open .modal-sheet {
+      transform: translateY(0);
+    }
+    .sheet-handle {
+      width: 36px; height: 4px;
+      border-radius: 2px;
+      background: rgba(255,255,255,.2);
+      margin: 10px auto 0;
+    }
+    .sheet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px 0;
+    }
+    .sheet-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .sheet-cancel, .sheet-done {
+      background: none;
+      border: none;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 4px 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sheet-cancel { color: var(--sub); }
+    .sheet-done   { color: var(--primary); font-weight: 700; }
+
+    /* ══ Drum Picker (inside modal) ═══════════════════════ */
+    .picker-row {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 220px;
+      padding: 0 20px;
+      margin: 8px 0 16px;
+    }
+    .p-highlight {
+      position: absolute;
+      pointer-events: none;
+      left: 20px; right: 20px;
+      top: 50%; transform: translateY(-50%);
+      height: 44px;
+      background: rgba(74,144,226,.13);
+      border: 1px solid rgba(74,144,226,.30);
+      border-radius: 11px;
+      z-index: 2;
+    }
+    .p-fade {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+      background: linear-gradient(
+        to bottom,
+        #162030 0%,
+        transparent 28%,
+        transparent 72%,
+        #162030 100%
+      );
+    }
+    .drum-sep {
+      flex-shrink: 0;
+      width: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      font-weight: 300;
+      color: var(--sub);
+      z-index: 4;
+      position: relative;
+    }
+    .drum-track {
+      flex: 1;
+      height: 220px;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      z-index: 1;
+    }
+    .drum-track::-webkit-scrollbar { display: none; }
+    .drum-spacer { height: 88px; }
+    .drum-item {
+      height: 44px;
+      scroll-snap-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      user-select: none;
+    }
+
     /* ══ Result Header ═══════════════════════════════════════ */
     .result-header-wrap {
       max-width: 460px;
@@ -286,8 +381,6 @@
       letter-spacing: -1px;
       line-height: 1.1;
     }
-
-    /* Metric chips */
     .metrics-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -316,9 +409,9 @@
       color: var(--sub);
       margin-top: 4px;
     }
-    .c-blue   { color: var(--primary); }
-    .c-amber  { color: var(--service); }
-    .c-green  { color: var(--green); }
+    .c-blue  { color: var(--primary); }
+    .c-amber { color: var(--service); }
+    .c-green { color: var(--green); }
 
     /* ══ Section label ═══════════════════════════════════════ */
     .sec-label {
@@ -398,12 +491,7 @@
       letter-spacing: -0.3px;
       line-height: 1.2;
     }
-    .sc-dur {
-      font-size: 13px;
-      color: var(--sub);
-      margin-top: 5px;
-      font-weight: 500;
-    }
+    .sc-dur { font-size: 13px; color: var(--sub); margin-top: 5px; font-weight: 500; }
     .sched-a { background: rgba(52,170,220,.08);  border-color: rgba(52,170,220,.20); }
     .sched-s { background: rgba(255,149,0,.08);   border-color: rgba(255,149,0,.20); }
     .sched-b { background: rgba(175,82,222,.08);  border-color: rgba(175,82,222,.20); }
@@ -419,26 +507,18 @@
       padding: 16px 18px;
     }
     .bal-track {
-      height: 8px;
-      border-radius: 4px;
+      height: 8px; border-radius: 4px;
       background: var(--s2);
       margin: 10px 0 8px;
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
     }
     .bal-fill {
-      position: absolute;
-      inset: 0 auto 0 0;
+      position: absolute; inset: 0 auto 0 0;
       background: linear-gradient(90deg, var(--teamA), var(--teamB));
       border-radius: 4px;
       transition: width .55s cubic-bezier(.4,0,.2,1);
     }
-    .bal-lbls {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      font-weight: 600;
-    }
+    .bal-lbls { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; }
     .bal-a { color: var(--teamA); }
     .bal-b { color: var(--teamB); }
 
@@ -450,11 +530,8 @@
       padding: 16px 18px;
     }
     .sum-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      font-size: 14px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; font-size: 14px;
     }
     .sum-row + .sum-row { border-top: 1px solid var(--border); }
     .sum-lbl { color: var(--sub); font-weight: 500; }
@@ -465,7 +542,7 @@
 
 <div id="appWrap">
 
-<!-- ════════════════════════════════ INPUT SCREEN ════════ -->
+<!-- ════════════════════════ INPUT SCREEN ════════════════ -->
 <div id="scrInput" class="screen screen-active">
 
   <div class="input-header">
@@ -479,25 +556,31 @@
     <!-- Start Time -->
     <div class="card">
       <div class="card-label">시작 시간</div>
-      <div class="picker-row">
-        <div class="p-highlight"></div>
-        <div class="p-fade"></div>
-        <div class="drum-track" id="sH"></div>
-        <div class="drum-sep">:</div>
-        <div class="drum-track" id="sM"></div>
-      </div>
+      <button class="time-display-btn" id="startTimeBtn">
+        <span class="td-time" id="startTimeDisplay">10:00</span>
+        <span class="td-edit">
+          수정
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </span>
+      </button>
     </div>
 
     <!-- End Time -->
     <div class="card">
       <div class="card-label">종료 시간</div>
-      <div class="picker-row">
-        <div class="p-highlight"></div>
-        <div class="p-fade"></div>
-        <div class="drum-track" id="eH"></div>
-        <div class="drum-sep">:</div>
-        <div class="drum-track" id="eM"></div>
-      </div>
+      <button class="time-display-btn" id="endTimeBtn">
+        <span class="td-time" id="endTimeDisplay">12:00</span>
+        <span class="td-edit">
+          수정
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </span>
+      </button>
     </div>
 
     <!-- Service Time -->
@@ -534,7 +617,7 @@
 </div><!-- #scrInput -->
 
 
-<!-- ════════════════════════════════ RESULT SCREEN ════════ -->
+<!-- ════════════════════════ RESULT SCREEN ═════════════════ -->
 <div id="scrResult" class="screen screen-right">
 
   <div class="result-header-wrap">
@@ -547,7 +630,6 @@
     </button>
     <div class="result-eyebrow">Schedule Analysis</div>
     <div class="result-h1">Rest Period<br>Breakdown</div>
-
     <div class="metrics-row">
       <div class="metric-chip">
         <div class="mc-val c-blue"  id="mTotal">—</div>
@@ -582,54 +664,37 @@
         <span id="lbEnd"></span>
       </div>
       <div class="tl-legend">
-        <div class="legend-item">
-          <div class="lgd-dot" style="background:var(--teamA)"></div>Team A
-        </div>
-        <div class="legend-item">
-          <div class="lgd-dot" style="background:var(--service)"></div>Service
-        </div>
-        <div class="legend-item">
-          <div class="lgd-dot" style="background:var(--teamB)"></div>Team B
-        </div>
+        <div class="legend-item"><div class="lgd-dot" style="background:var(--teamA)"></div>Team A</div>
+        <div class="legend-item"><div class="lgd-dot" style="background:var(--service)"></div>Service</div>
+        <div class="legend-item"><div class="lgd-dot" style="background:var(--teamB)"></div>Team B</div>
       </div>
     </div>
 
     <!-- Team A -->
     <div class="sched-card sched-a">
-      <div class="sc-tag col-a">
-        <div class="sc-dot" style="background:var(--teamA)"></div>
-        Team A · Rest Period
-      </div>
+      <div class="sc-tag col-a"><div class="sc-dot" style="background:var(--teamA)"></div>Team A · Rest Period</div>
       <div class="sc-range col-a" id="rA">—</div>
-      <div class="sc-dur" id="dA">—</div>
+      <div class="sc-dur"        id="dA">—</div>
     </div>
 
     <!-- Service -->
     <div class="sched-card sched-s">
-      <div class="sc-tag col-s">
-        <div class="sc-dot" style="background:var(--service)"></div>
-        Service · Active Period
-      </div>
+      <div class="sc-tag col-s"><div class="sc-dot" style="background:var(--service)"></div>Service · Active Period</div>
       <div class="sc-range col-s" id="rS">—</div>
-      <div class="sc-dur" id="dS">—</div>
+      <div class="sc-dur"         id="dS">—</div>
     </div>
 
     <!-- Team B -->
     <div class="sched-card sched-b">
-      <div class="sc-tag col-b">
-        <div class="sc-dot" style="background:var(--teamB)"></div>
-        Team B · Rest Period
-      </div>
+      <div class="sc-tag col-b"><div class="sc-dot" style="background:var(--teamB)"></div>Team B · Rest Period</div>
       <div class="sc-range col-b" id="rB">—</div>
-      <div class="sc-dur" id="dB">—</div>
+      <div class="sc-dur"         id="dB">—</div>
     </div>
 
     <!-- Balance -->
     <div class="balance-card">
       <div class="sec-label">Team Balance</div>
-      <div class="bal-track">
-        <div class="bal-fill" id="balFill"></div>
-      </div>
+      <div class="bal-track"><div class="bal-fill" id="balFill"></div></div>
       <div class="bal-lbls">
         <span class="bal-a" id="balA">Team A</span>
         <span class="bal-b" id="balB">Team B</span>
@@ -639,40 +704,51 @@
     <!-- Summary -->
     <div class="summary-card">
       <div class="sec-label">Schedule Summary</div>
-      <div class="sum-row">
-        <span class="sum-lbl">Duty Start</span>
-        <span class="sum-val" id="sStart">—</span>
-      </div>
-      <div class="sum-row">
-        <span class="sum-lbl">Duty End</span>
-        <span class="sum-val" id="sEnd">—</span>
-      </div>
-      <div class="sum-row">
-        <span class="sum-lbl">Total Duration</span>
-        <span class="sum-val" id="sTotal">—</span>
-      </div>
-      <div class="sum-row">
-        <span class="sum-lbl">Service Period</span>
-        <span class="sum-val" id="sSvc">—</span>
-      </div>
-      <div class="sum-row">
-        <span class="sum-lbl">Rest Coverage</span>
-        <span class="sum-val" id="sCoverage">—</span>
-      </div>
+      <div class="sum-row"><span class="sum-lbl">Duty Start</span>    <span class="sum-val" id="sStart">—</span></div>
+      <div class="sum-row"><span class="sum-lbl">Duty End</span>      <span class="sum-val" id="sEnd">—</span></div>
+      <div class="sum-row"><span class="sum-lbl">Total Duration</span><span class="sum-val" id="sTotal">—</span></div>
+      <div class="sum-row"><span class="sum-lbl">Service Period</span><span class="sum-val" id="sSvc">—</span></div>
+      <div class="sum-row"><span class="sum-lbl">Rest Coverage</span> <span class="sum-val" id="sCoverage">—</span></div>
     </div>
 
   </div>
   </div>
 </div><!-- #scrResult -->
 
+
+<!-- ════════════════════════ BOTTOM SHEET MODAL ════════════ -->
+<div class="modal-overlay" id="pickerModal">
+  <div class="modal-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <button class="sheet-cancel" id="sheetCancel">취소</button>
+      <span  class="sheet-title"  id="sheetTitle">시작 시간</span>
+      <button class="sheet-done"  id="sheetDone">완료</button>
+    </div>
+    <div class="picker-row">
+      <div class="p-highlight"></div>
+      <div class="p-fade"></div>
+      <div class="drum-track" id="modalH"></div>
+      <div class="drum-sep">:</div>
+      <div class="drum-track" id="modalM"></div>
+    </div>
+  </div>
+</div>
+
 </div><!-- #appWrap -->
 
 <script>
-  // ── Drum Picker ──────────────────────────────────────────
+  // ── State ────────────────────────────────────────────────
+  const times = { startH: 10, startM: 0, endH: 12, endM: 0 };
+  let   svcMin = 30;
+  let   activeField = null; // 'start' | 'end'
+
   const ITEM_H = 44;
 
-  function buildDrum(id, count, initial) {
+  // ── Build drum tracks (once) ─────────────────────────────
+  function buildDrum(id, count) {
     const el = document.getElementById(id);
+    el.innerHTML = '';
     const top = document.createElement('div');
     top.className = 'drum-spacer';
     el.appendChild(top);
@@ -685,35 +761,27 @@
     const bot = document.createElement('div');
     bot.className = 'drum-spacer';
     el.appendChild(bot);
-    // Set scroll after next frame so layout is complete
-    requestAnimationFrame(() => { el.scrollTop = initial * ITEM_H; });
   }
 
-  function drumVal(id) {
+  buildDrum('modalH', 24);
+  buildDrum('modalM', 60);
+
+  function setDrum(id, value) {
+    const el = document.getElementById(id);
+    el.scrollTop = value * ITEM_H;
+  }
+  function getDrum(id) {
     return Math.round(document.getElementById(id).scrollTop / ITEM_H);
   }
-
-  buildDrum('sH', 24, 10);
-  buildDrum('sM', 60,  0);
-  buildDrum('eH', 24, 12);
-  buildDrum('eM', 60,  0);
-
-  // ── Service Stepper ──────────────────────────────────────
-  let svcMin = 30;
-  const svcNumEl = document.getElementById('svcNum');
-  document.getElementById('decBtn').addEventListener('click', () => {
-    if (svcMin > 1) svcNumEl.textContent = --svcMin;
-  });
-  document.getElementById('incBtn').addEventListener('click', () => {
-    if (svcMin < 999) svcNumEl.textContent = ++svcMin;
-  });
 
   // ── Helpers ──────────────────────────────────────────────
   function pad(n) { return String(n).padStart(2, '0'); }
 
-  function fmt12(total) {
-    const h    = Math.floor(total / 60) % 24;
-    const m    = total % 60;
+  function fmtDisplay(h, m) { return `${pad(h)}:${pad(m)}`; }
+
+  function fmt12(totalMin) {
+    const h    = Math.floor(totalMin / 60) % 24;
+    const m    = totalMin % 60;
     const ampm = h < 12 ? 'AM' : 'PM';
     const h12  = h % 12 || 12;
     return `${pad(h12)}:${pad(m)} ${ampm}`;
@@ -724,6 +792,59 @@
     const h = Math.floor(min / 60), m = min % 60;
     return m ? `${h}h ${m}m` : `${h}h`;
   }
+
+  function updateDisplays() {
+    document.getElementById('startTimeDisplay').textContent =
+      fmtDisplay(times.startH, times.startM);
+    document.getElementById('endTimeDisplay').textContent =
+      fmtDisplay(times.endH, times.endM);
+  }
+
+  // ── Modal open/close ──────────────────────────────────────
+  const modal = document.getElementById('pickerModal');
+
+  function openPicker(field) {
+    activeField = field;
+    document.getElementById('sheetTitle').textContent =
+      field === 'start' ? '시작 시간' : '종료 시간';
+
+    const h = field === 'start' ? times.startH : times.endH;
+    const m = field === 'start' ? times.startM : times.endM;
+
+    // Scroll to current value after a tiny delay so DOM is visible
+    requestAnimationFrame(() => {
+      setDrum('modalH', h);
+      setDrum('modalM', m);
+    });
+
+    modal.classList.add('open');
+  }
+
+  function closePicker(save) {
+    if (save && activeField) {
+      const h = getDrum('modalH');
+      const m = getDrum('modalM');
+      if (activeField === 'start') { times.startH = h; times.startM = m; }
+      else                          { times.endH   = h; times.endM   = m; }
+      updateDisplays();
+    }
+    modal.classList.remove('open');
+    activeField = null;
+  }
+
+  document.getElementById('startTimeBtn').addEventListener('click', () => openPicker('start'));
+  document.getElementById('endTimeBtn').addEventListener('click',   () => openPicker('end'));
+  document.getElementById('sheetCancel').addEventListener('click',  () => closePicker(false));
+  document.getElementById('sheetDone').addEventListener('click',    () => closePicker(true));
+
+  // ── Service Stepper ──────────────────────────────────────
+  const svcNumEl = document.getElementById('svcNum');
+  document.getElementById('decBtn').addEventListener('click', () => {
+    if (svcMin > 1) svcNumEl.textContent = --svcMin;
+  });
+  document.getElementById('incBtn').addEventListener('click', () => {
+    if (svcMin < 999) svcNumEl.textContent = ++svcMin;
+  });
 
   // ── Screen transitions ───────────────────────────────────
   const scrI = document.getElementById('scrInput');
@@ -743,11 +864,8 @@
 
   // ── Calculate ────────────────────────────────────────────
   document.getElementById('calcBtn').addEventListener('click', () => {
-    const sh = drumVal('sH'), sm = drumVal('sM');
-    const eh = drumVal('eH'), em = drumVal('eM');
-
-    const start = sh * 60 + sm;
-    const end   = eh * 60 + em;
+    const start = times.startH * 60 + times.startM;
+    const end   = times.endH   * 60 + times.endM;
     const total = end - start;
 
     const errEl = document.getElementById('errBanner');
@@ -759,13 +877,11 @@
       return;
     }
     if (svcMin >= total) {
-      errEl.textContent =
-        `서비스 시간(${svcMin}분)이 전체 시간(${total}분)을 초과합니다.`;
+      errEl.textContent = `서비스 시간(${svcMin}분)이 전체 시간(${total}분)을 초과합니다.`;
       errEl.classList.add('show');
       return;
     }
 
-    // Core calculation
     const mid  = Math.trunc(total / 2);
     const svcS = mid - Math.trunc(svcMin / 2);
     const svcE = svcS + svcMin;
@@ -781,7 +897,6 @@
     document.getElementById('barA').style.width = (tA     / total * 100) + '%';
     document.getElementById('barS').style.width = (svcMin / total * 100) + '%';
     document.getElementById('barB').style.width = (tB     / total * 100) + '%';
-
     document.getElementById('lbStart').textContent = fmt12(absS);
     document.getElementById('lbSvcS').textContent  = fmt12(absSS);
     document.getElementById('lbSvcE').textContent  = fmt12(absSE);
@@ -798,7 +913,6 @@
     // Metrics
     document.getElementById('mTotal').textContent   = fmtDur(total);
     document.getElementById('mService').textContent = fmtDur(svcMin);
-
     const restTotal = tA + tB;
     const pctA  = restTotal > 0 ? Math.round(tA / restTotal * 100) : 50;
     const even  = Math.abs(tA - tB) <= 1;
