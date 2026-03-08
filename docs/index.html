@@ -11,6 +11,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Rest Calc" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -205,7 +208,7 @@
       box-shadow: 0 8px 32px rgba(194,24,91,.50);
     }
     .calc-btn:active { opacity: .85; transform: scale(.98); }
-    .ka-mark { width: 58px; height: 58px; flex-shrink: 0; border-radius: 50%; overflow: hidden; }
+    .ka-mark { width: 58px; height: 58px; flex-shrink: 0; border-radius: 50%; overflow: hidden; object-fit: cover; object-position: top center; background: #FFF0F5; }
     .calc-btn-label {
       display: flex;
       flex-direction: column;
@@ -213,18 +216,13 @@
       gap: 4px;
     }
     .calc-btn-main {
-      font-size: 21px;
-      font-weight: 800;
-      letter-spacing: 3.5px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 26px;
+      font-weight: 400;
+      letter-spacing: 2px;
       line-height: 1;
       color: #fff;
-    }
-    .calc-btn-sub {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: rgba(255,180,210,.80);
+      text-shadow: 0 2px 8px rgba(0,0,0,.35);
     }
 
     /* ══ iOS-style Bottom Sheet Modal ═══════════════════════ */
@@ -610,47 +608,12 @@
 
     <!-- CTA -->
     <button class="calc-btn" id="calcBtn">
-      <!-- Hello Kitty emblem -->
-      <svg class="ka-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <!-- Background -->
-        <circle cx="50" cy="50" r="50" fill="#FFF0F5"/>
-
-        <!-- Left ear -->
-        <circle cx="24" cy="27" r="13" fill="#fff"/>
-        <circle cx="24" cy="27" r="8"  fill="#FFB3CF"/>
-        <!-- Right ear -->
-        <circle cx="76" cy="27" r="13" fill="#fff"/>
-        <circle cx="76" cy="27" r="8"  fill="#FFB3CF"/>
-
-        <!-- Head -->
-        <ellipse cx="50" cy="58" rx="36" ry="34" fill="#fff"/>
-
-        <!-- Whiskers left -->
-        <line x1="16" y1="56" x2="38" y2="59" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
-        <line x1="16" y1="63" x2="38" y2="63" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
-        <line x1="16" y1="70" x2="38" y2="67" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
-        <!-- Whiskers right -->
-        <line x1="62" y1="59" x2="84" y2="56" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
-        <line x1="62" y1="63" x2="84" y2="63" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
-        <line x1="62" y1="67" x2="84" y2="70" stroke="#ccc" stroke-width="1.4" stroke-linecap="round"/>
-
-        <!-- Eyes -->
-        <ellipse cx="39" cy="53" rx="4.5" ry="5.5" fill="#111"/>
-        <ellipse cx="61" cy="53" rx="4.5" ry="5.5" fill="#111"/>
-
-        <!-- Nose (gold oval) -->
-        <ellipse cx="50" cy="64" rx="4" ry="3" fill="#FFD700"/>
-
-        <!-- Bow on right ear (Kitty's left) — two lobes + knot -->
-        <path d="M76,20 C76,20 70,10 64,13 C61,16 63,23 68,21 C71,20 74,21 76,20Z"
-              fill="#E91E8C"/>
-        <path d="M76,20 C76,20 82,10 88,13 C91,16 89,23 84,21 C81,20 78,21 76,20Z"
-              fill="#E91E8C"/>
-        <circle cx="76" cy="20" r="4" fill="#C2185B"/>
-      </svg>
+      <img class="ka-mark"
+           src="https://pngimg.com/uploads/hello_kitty/hello_kitty_PNG3.png"
+           alt="Hello Kitty"
+           crossorigin="anonymous">
       <div class="calc-btn-label">
         <span class="calc-btn-main">CALCULATE</span>
-        <span class="calc-btn-sub">Rest Period</span>
       </div>
     </button>
 
