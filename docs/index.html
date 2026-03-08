@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>휴식시간 편성 계산기</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teamA:   #3399DC;
+      --service: #FF9400;
+      --teamB:   #AD52DE;
+      --bg:      #f2f2f7;
+      --card-bg: rgba(255,255,255,0.72);
+      --radius:  16px;
+      --text:    #1c1c1e;
+      --sub:     #6e6e73;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:      #1c1c1e;
+        --card-bg: rgba(44,44,46,0.80);
+        --text:    #f5f5f7;
+        --sub:     #8e8e93;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+    }
+
+    header {
+      padding: 20px 20px 4px;
+    }
+    header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 12px 20px 48px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── Card ─────────────────────────────────── */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+
+    .card-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--sub);
+      margin-bottom: 8px;
+    }
+
+    /* ── Time Picker ──────────────────────────── */
+    .time-picker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 0 4px;
+    }
+    .time-picker select {
+      font-size: 40px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      appearance: none;
+      -webkit-appearance: none;
+      text-align: center;
+      cursor: pointer;
+      outline: none;
+      padding: 2px 4px;
+      border-radius: 8px;
+    }
+    .time-picker select:focus { background: rgba(128,128,128,.12); }
+    .time-sep {
+      font-size: 40px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    /* ── Service Time ─────────────────────────── */
+    .service-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      padding: 12px 0 4px;
+    }
+    .stepper-btn {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(142,142,147,.18);
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s;
+      user-select: none;
+    }
+    .stepper-btn:active { background: rgba(142,142,147,.35); }
+    .service-num {
+      font-size: 64px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      min-width: 80px;
+      text-align: center;
+    }
+    .service-unit {
+      font-size: 14px;
+      color: var(--sub);
+      text-align: center;
+      margin-top: 4px;
+      margin-bottom: 8px;
+    }
+
+    /* ── Calculate Button ─────────────────────── */
+    .calc-btn {
+      width: 100%;
+      padding: 20px;
+      border: none;
+      border-radius: var(--radius);
+      background: linear-gradient(90deg, var(--teamA), var(--teamB));
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s, transform .1s;
+    }
+    .calc-btn:active { opacity: .85; transform: scale(.98); }
+
+    /* ── Error banner ─────────────────────────── */
+    .error-banner {
+      background: rgba(255,59,48,.12);
+      border: 1.5px solid rgba(255,59,48,.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #ff3b30;
+      font-size: 15px;
+      font-weight: 500;
+      display: none;
+    }
+    .error-banner.show { display: block; }
+
+    /* ── Result Section ───────────────────────── */
+    #result { display: none; }
+    #result.show { display: contents; }
+
+    .result-header {
+      font-size: 22px;
+      font-weight: 700;
+      padding: 4px 0 2px;
+    }
+
+    /* Timeline bar */
+    .timeline-wrap { padding: 4px 0 2px; }
+    .timeline-bar {
+      height: 52px;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+    }
+    .bar-seg { height: 100%; transition: width .4s ease; }
+    .bar-a { background: var(--teamA); }
+    .bar-s { background: var(--service); }
+    .bar-b { background: var(--teamB); }
+
+    .timeline-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--sub);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Schedule cards */
+    .sched-card {
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+    .sched-card .sc-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .sched-card .sc-time {
+      font-size: 36px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+    .sched-card .sc-min {
+      font-size: 17px;
+      color: var(--sub);
+      margin-top: 2px;
+    }
+
+    .card-a { background: rgba(51,153,220,.12); border: 1.5px solid rgba(51,153,220,.35); }
+    .card-s { background: rgba(255,148,0,.12);  border: 1.5px solid rgba(255,148,0,.35); }
+    .card-b { background: rgba(173,82,222,.12); border: 1.5px solid rgba(173,82,222,.35); }
+    .title-a { color: var(--teamA); }
+    .title-s { color: var(--service); }
+    .title-b { color: var(--teamB); }
+
+    /* Summary row */
+    .summary-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+    .summary-row .label { color: var(--sub); }
+    .summary-row .value { font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>휴식시간 편성</h1>
+</header>
+
+<div class="stack">
+
+  <!-- Start Time -->
+  <div class="card">
+    <div class="card-label">시작 시간</div>
+    <div class="time-picker">
+      <select id="startHour" aria-label="시작 시간(시)"></select>
+      <span class="time-sep">:</span>
+      <select id="startMin" aria-label="시작 시간(분)"></select>
+    </div>
+  </div>
+
+  <!-- End Time -->
+  <div class="card">
+    <div class="card-label">종료 시간</div>
+    <div class="time-picker">
+      <select id="endHour" aria-label="종료 시간(시)"></select>
+      <span class="time-sep">:</span>
+      <select id="endMin" aria-label="종료 시간(분)"></select>
+    </div>
+  </div>
+
+  <!-- Service Time -->
+  <div class="card">
+    <div class="card-label" style="text-align:center">서비스 시간</div>
+    <div class="service-row">
+      <button class="stepper-btn" id="decBtn" aria-label="감소">−</button>
+      <span class="service-num" id="serviceNum">30</span>
+      <button class="stepper-btn" id="incBtn" aria-label="증가">＋</button>
+    </div>
+    <div class="service-unit">분</div>
+  </div>
+
+  <!-- Error -->
+  <div class="error-banner" id="errorBanner"></div>
+
+  <!-- Calculate -->
+  <button class="calc-btn" id="calcBtn">계산하기</button>
+
+  <!-- Result -->
+  <div id="result">
+    <div class="result-header">편성 결과</div>
+
+    <!-- Timeline -->
+    <div class="card timeline-wrap">
+      <div class="timeline-bar">
+        <div class="bar-seg bar-a" id="barA"></div>
+        <div class="bar-seg bar-s" id="barS"></div>
+        <div class="bar-seg bar-b" id="barB"></div>
+      </div>
+      <div class="timeline-labels">
+        <span id="lblStart"></span>
+        <span id="lblSvcStart"></span>
+        <span id="lblSvcEnd"></span>
+        <span id="lblEnd"></span>
+      </div>
+    </div>
+
+    <!-- A조 -->
+    <div class="sched-card card-a">
+      <div class="sc-title title-a">A조 휴식</div>
+      <div class="sc-time" id="timeA"></div>
+      <div class="sc-min" id="minA"></div>
+    </div>
+
+    <!-- 서비스 -->
+    <div class="sched-card card-s">
+      <div class="sc-title title-s">서비스</div>
+      <div class="sc-time" id="timeSvc"></div>
+      <div class="sc-min" id="minSvc"></div>
+    </div>
+
+    <!-- B조 -->
+    <div class="sched-card card-b">
+      <div class="sc-title title-b">B조 휴식</div>
+      <div class="sc-time" id="timeB"></div>
+      <div class="sc-min" id="minB"></div>
+    </div>
+
+    <!-- Summary -->
+    <div class="card summary-row">
+      <span class="label">🕐 전체 시간</span>
+      <span class="value" id="summaryText"></span>
+    </div>
+  </div>
+
+</div><!-- .stack -->
+
+<script>
+  // ── Populate selects ───────────────────────────────────────
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function fill(id, count, offset = 0) {
+    const sel = document.getElementById(id);
+    for (let i = 0; i < count; i++) {
+      const o = document.createElement('option');
+      o.value = i + offset;
+      o.textContent = pad(i + offset);
+      sel.appendChild(o);
+    }
+  }
+
+  fill('startHour', 24); fill('startMin', 60);
+  fill('endHour',   24); fill('endMin',   60);
+
+  // Defaults: 10:00 ~ 12:00
+  document.getElementById('startHour').value = 10;
+  document.getElementById('startMin').value  = 0;
+  document.getElementById('endHour').value   = 12;
+  document.getElementById('endMin').value    = 0;
+
+  // ── Service stepper ────────────────────────────────────────
+  let serviceMinutes = 30;
+  const serviceNumEl = document.getElementById('serviceNum');
+
+  document.getElementById('decBtn').addEventListener('click', () => {
+    if (serviceMinutes > 1) { serviceMinutes--; serviceNumEl.textContent = serviceMinutes; }
+  });
+  document.getElementById('incBtn').addEventListener('click', () => {
+    serviceMinutes++;
+    serviceNumEl.textContent = serviceMinutes;
+  });
+
+  // ── Helpers ────────────────────────────────────────────────
+  function toMinutes(h, m) { return h * 60 + m; }
+
+  function fmtTime(totalMin) {
+    const h = Math.floor(totalMin / 60) % 24;
+    const m = totalMin % 60;
+    const suffix = h < 12 ? '오전' : '오후';
+    const h12 = h % 12 === 0 ? 12 : h % 12;
+    return `${suffix} ${pad(h12)}:${pad(m)}`;
+  }
+
+  function timeRange(startMin, endMin) {
+    return `${fmtTime(startMin)} ~ ${fmtTime(endMin)}`;
+  }
+
+  // ── Calculate ──────────────────────────────────────────────
+  document.getElementById('calcBtn').addEventListener('click', calculate);
+
+  function calculate() {
+    const sh = +document.getElementById('startHour').value;
+    const sm = +document.getElementById('startMin').value;
+    const eh = +document.getElementById('endHour').value;
+    const em = +document.getElementById('endMin').value;
+
+    const startMin = toMinutes(sh, sm);
+    const endMin   = toMinutes(eh, em);
+    const total    = endMin - startMin;
+
+    const errorEl  = document.getElementById('errorBanner');
+    const resultEl = document.getElementById('result');
+
+    errorEl.classList.remove('show');
+    resultEl.classList.remove('show');
+
+    if (total <= 0) {
+      errorEl.textContent = '종료 시간이 시작 시간보다 이전입니다.';
+      errorEl.classList.add('show');
+      return;
+    }
+    if (serviceMinutes >= total) {
+      errorEl.textContent = `서비스 시간(${serviceMinutes}분)이 전체 시간(${total}분)을 초과합니다.`;
+      errorEl.classList.add('show');
+      return;
+    }
+
+    // Core logic (matches Swift — integer truncating division)
+    const midPoint    = Math.trunc(total / 2);
+    const svcStart    = midPoint - Math.trunc(serviceMinutes / 2);
+    const svcEnd      = svcStart + serviceMinutes;
+    const teamAMin    = svcStart;
+    const teamBMin    = total - svcEnd;
+
+    const absStart    = startMin;
+    const absSvcStart = startMin + svcStart;
+    const absSvcEnd   = startMin + svcEnd;
+    const absEnd      = endMin;
+
+    // Timeline bar widths
+    document.getElementById('barA').style.width = (teamAMin   / total * 100) + '%';
+    document.getElementById('barS').style.width = (serviceMinutes / total * 100) + '%';
+    document.getElementById('barB').style.width = (teamBMin   / total * 100) + '%';
+
+    // Timeline labels
+    document.getElementById('lblStart').textContent    = fmtTime(absStart);
+    document.getElementById('lblSvcStart').textContent = fmtTime(absSvcStart);
+    document.getElementById('lblSvcEnd').textContent   = fmtTime(absSvcEnd);
+    document.getElementById('lblEnd').textContent      = fmtTime(absEnd);
+
+    // Schedule cards
+    document.getElementById('timeA').textContent   = timeRange(absStart, absSvcStart);
+    document.getElementById('minA').textContent    = teamAMin + '분';
+    document.getElementById('timeSvc').textContent = timeRange(absSvcStart, absSvcEnd);
+    document.getElementById('minSvc').textContent  = serviceMinutes + '분';
+    document.getElementById('timeB').textContent   = timeRange(absSvcEnd, absEnd);
+    document.getElementById('minB').textContent    = teamBMin + '분';
+
+    document.getElementById('summaryText').textContent = `${total}분  (서비스 ${serviceMinutes}분)`;
+
+    resultEl.classList.add('show');
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>
