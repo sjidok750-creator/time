@@ -937,7 +937,30 @@
   });
 </script>
 <script>
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+  if ('serviceWorker' in navigator) {
+    // SW 등록
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      // 백그라운드에서 주기적으로 업데이트 확인 (앱이 오래 켜져 있을 때를 위해)
+      setInterval(() => reg.update(), 60 * 60 * 1000); // 1시간마다
+    });
+
+    // ── 새 버전 감지 → 자동 새로고침 ──────────────────────
+    // 방법 1: SW가 보내는 NEW_VERSION 메시지
+    navigator.serviceWorker.addEventListener('message', e => {
+      if (e.data && e.data.type === 'NEW_VERSION') {
+        window.location.reload();
+      }
+    });
+
+    // 방법 2: 새 SW가 control을 가져갈 때 (skipWaiting + clients.claim)
+    let reloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!reloading) {
+        reloading = true;
+        window.location.reload();
+      }
+    });
+  }
 </script>
 </body>
 </html>
