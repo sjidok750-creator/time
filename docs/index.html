@@ -467,31 +467,44 @@
     }
     .lgd-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
-    /* ══ Schedule cards ══════════════════════════════════════ */
+    /* ══ Schedule cards (parallel row) ══════════════════════ */
+    .sched-row {
+      display: flex;
+      gap: 8px;
+    }
     .sched-card {
+      flex: 1;
+      min-width: 0;
       border-radius: var(--radius);
-      padding: 16px 18px 18px;
+      padding: 12px 10px 14px;
       border: 1px solid transparent;
     }
     .sc-tag {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 10px;
+      gap: 5px;
+      font-size: 9px;
       font-weight: 700;
       letter-spacing: 1.2px;
       text-transform: uppercase;
       margin-bottom: 10px;
     }
-    .sc-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .sc-range {
-      font-size: 21px;
+    .sc-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .sc-times {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 8px;
+    }
+    .sc-time {
+      font-size: 14px;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
       letter-spacing: -0.3px;
-      line-height: 1.2;
+      line-height: 1.35;
     }
-    .sc-dur { font-size: 13px; color: var(--sub); margin-top: 5px; font-weight: 500; }
+    .sc-arrow { font-size: 10px; color: var(--sub); line-height: 1.2; }
+    .sc-dur { font-size: 11px; color: var(--sub); font-weight: 500; }
     .sched-a { background: rgba(52,170,220,.08);  border-color: rgba(52,170,220,.20); }
     .sched-s { background: rgba(255,149,0,.08);   border-color: rgba(255,149,0,.20); }
     .sched-b { background: rgba(175,82,222,.08);  border-color: rgba(175,82,222,.20); }
@@ -670,25 +683,42 @@
       </div>
     </div>
 
-    <!-- Team A -->
-    <div class="sched-card sched-a">
-      <div class="sc-tag col-a"><div class="sc-dot" style="background:var(--teamA)"></div>Team A · Rest Period</div>
-      <div class="sc-range col-a" id="rA">—</div>
-      <div class="sc-dur"        id="dA">—</div>
-    </div>
+    <!-- Schedule: parallel row -->
+    <div class="sched-row">
 
-    <!-- Service -->
-    <div class="sched-card sched-s">
-      <div class="sc-tag col-s"><div class="sc-dot" style="background:var(--service)"></div>Service · Active Period</div>
-      <div class="sc-range col-s" id="rS">—</div>
-      <div class="sc-dur"         id="dS">—</div>
-    </div>
+      <!-- Team A -->
+      <div class="sched-card sched-a">
+        <div class="sc-tag col-a"><div class="sc-dot" style="background:var(--teamA)"></div>Team A · Rest</div>
+        <div class="sc-times">
+          <div class="sc-time col-a" id="rA-s">—</div>
+          <div class="sc-arrow">↓</div>
+          <div class="sc-time col-a" id="rA-e">—</div>
+        </div>
+        <div class="sc-dur" id="dA">—</div>
+      </div>
 
-    <!-- Team B -->
-    <div class="sched-card sched-b">
-      <div class="sc-tag col-b"><div class="sc-dot" style="background:var(--teamB)"></div>Team B · Rest Period</div>
-      <div class="sc-range col-b" id="rB">—</div>
-      <div class="sc-dur"         id="dB">—</div>
+      <!-- Service -->
+      <div class="sched-card sched-s">
+        <div class="sc-tag col-s"><div class="sc-dot" style="background:var(--service)"></div>Service · Active</div>
+        <div class="sc-times">
+          <div class="sc-time col-s" id="rS-s">—</div>
+          <div class="sc-arrow">↓</div>
+          <div class="sc-time col-s" id="rS-e">—</div>
+        </div>
+        <div class="sc-dur" id="dS">—</div>
+      </div>
+
+      <!-- Team B -->
+      <div class="sched-card sched-b">
+        <div class="sc-tag col-b"><div class="sc-dot" style="background:var(--teamB)"></div>Team B · Rest</div>
+        <div class="sc-times">
+          <div class="sc-time col-b" id="rB-s">—</div>
+          <div class="sc-arrow">↓</div>
+          <div class="sc-time col-b" id="rB-e">—</div>
+        </div>
+        <div class="sc-dur" id="dB">—</div>
+      </div>
+
     </div>
 
     <!-- Balance -->
@@ -903,12 +933,15 @@
     document.getElementById('lbEnd').textContent   = fmt12(absE);
 
     // Schedule cards
-    document.getElementById('rA').textContent = `${fmt12(absS)}  –  ${fmt12(absSS)}`;
-    document.getElementById('dA').textContent = `Duration: ${fmtDur(tA)}`;
-    document.getElementById('rS').textContent = `${fmt12(absSS)}  –  ${fmt12(absSE)}`;
-    document.getElementById('dS').textContent = `Duration: ${fmtDur(svcMin)}`;
-    document.getElementById('rB').textContent = `${fmt12(absSE)}  –  ${fmt12(absE)}`;
-    document.getElementById('dB').textContent = `Duration: ${fmtDur(tB)}`;
+    document.getElementById('rA-s').textContent = fmt12(absS);
+    document.getElementById('rA-e').textContent = fmt12(absSS);
+    document.getElementById('dA').textContent   = fmtDur(tA);
+    document.getElementById('rS-s').textContent = fmt12(absSS);
+    document.getElementById('rS-e').textContent = fmt12(absSE);
+    document.getElementById('dS').textContent   = fmtDur(svcMin);
+    document.getElementById('rB-s').textContent = fmt12(absSE);
+    document.getElementById('rB-e').textContent = fmt12(absE);
+    document.getElementById('dB').textContent   = fmtDur(tB);
 
     // Metrics
     document.getElementById('mTotal').textContent   = fmtDur(total);
