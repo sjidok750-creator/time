@@ -205,8 +205,9 @@
     }
     .calc-btn {
       flex: 1;
+      min-width: 0;
       align-self: stretch;
-      padding: 0 18px;
+      padding: 0 12px;
       border: 1px solid rgba(255,255,255,.12);
       border-radius: var(--radius);
       background: var(--surface);
@@ -214,6 +215,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
       -webkit-tap-highlight-color: transparent;
       transition: opacity .15s, transform .12s;
       box-shadow: 0 4px 20px rgba(0,0,0,.35);
@@ -221,11 +223,12 @@
     .calc-btn:active { opacity: .75; transform: scale(.98); }
     .calc-btn-main {
       font-family: 'Black Han Sans', sans-serif;
-      font-size: 30px;
+      font-size: clamp(18px, 5vw, 30px);
       font-weight: 400;
-      letter-spacing: 7px;
+      letter-spacing: clamp(2px, 1.2vw, 7px);
       line-height: 1;
       color: var(--text);
+      white-space: nowrap;
       width: 100%;
       text-align: center;
     }
