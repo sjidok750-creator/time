@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -190,39 +190,42 @@
     }
     .error-banner.show { display: block; }
 
-    /* ══ Calc Button — Hello Kitty Edition ══════════════════ */
+    /* ══ CTA Row — Hello Kitty + Calc Button ══════════════ */
+    .cta-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .kitty-img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 4px 14px rgba(255,105,180,.35));
+    }
     .calc-btn {
-      width: 100%;
-      padding: 14px 22px;
-      border: 1px solid rgba(255,120,180,.28);
+      flex: 1;
+      padding: 22px 18px;
+      border: 2px solid #FF1744;
       border-radius: var(--radius);
-      background: linear-gradient(145deg, #1a0015 0%, #7B1551 50%, #C2185B 100%);
-      color: #fff;
+      background: linear-gradient(145deg, #ffffff 0%, #ffe0ec 55%, #ffb3c6 100%);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 20px;
       -webkit-tap-highlight-color: transparent;
       transition: opacity .15s, transform .12s;
-      box-shadow: 0 8px 32px rgba(194,24,91,.50);
+      box-shadow: 0 6px 28px rgba(255,23,68,.28), inset 0 1px 0 rgba(255,255,255,.85);
     }
     .calc-btn:active { opacity: .85; transform: scale(.98); }
-    .ka-mark { width: 58px; height: 58px; flex-shrink: 0; border-radius: 50%; overflow: hidden; object-fit: cover; object-position: top center; background: #FFF0F5; }
-    .calc-btn-label {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 4px;
-    }
     .calc-btn-main {
-      font-family: 'Fredoka One', cursive;
-      font-size: 26px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 28px;
       font-weight: 400;
-      letter-spacing: 2px;
+      letter-spacing: 4px;
       line-height: 1;
-      color: #fff;
-      text-shadow: 0 2px 8px rgba(0,0,0,.35);
+      color: #C2001F;
+      text-shadow: 0 2px 6px rgba(194,0,31,.18);
     }
 
     /* ══ iOS-style Bottom Sheet Modal ═══════════════════════ */
@@ -607,15 +610,14 @@
     <div class="error-banner" id="errBanner"></div>
 
     <!-- CTA -->
-    <button class="calc-btn" id="calcBtn">
-      <img class="ka-mark"
+    <div class="cta-row">
+      <img class="kitty-img"
            src="https://pngimg.com/uploads/hello_kitty/hello_kitty_PNG3.png"
-           alt="Hello Kitty"
-           crossorigin="anonymous">
-      <div class="calc-btn-label">
-        <span class="calc-btn-main">CALCULATE</span>
-      </div>
-    </button>
+           alt="Hello Kitty">
+      <button class="calc-btn" id="calcBtn">
+        <span class="calc-btn-main">계산하기</span>
+      </button>
+    </div>
 
   </div>
   </div>
