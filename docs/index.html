@@ -379,6 +379,13 @@
       -webkit-tap-highlight-color: transparent;
     }
     .back-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+    .result-title-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .result-title-text { flex: 1; min-width: 0; }
     .result-eyebrow {
       font-size: 11px;
       font-weight: 700;
@@ -392,6 +399,13 @@
       font-weight: 800;
       letter-spacing: -1px;
       line-height: 1.1;
+    }
+    .luffy-img {
+      width: 130px;
+      height: 130px;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 6px 18px rgba(255,180,30,.30));
     }
     .metrics-row {
       display: grid;
@@ -640,8 +654,15 @@
       </svg>
       Back
     </button>
-    <div class="result-eyebrow">Schedule Analysis</div>
-    <div class="result-h1">Rest Period<br>Breakdown</div>
+    <div class="result-title-row">
+      <div class="result-title-text">
+        <div class="result-eyebrow">Schedule Analysis</div>
+        <div class="result-h1">Rest Period<br>Breakdown</div>
+      </div>
+      <img class="luffy-img"
+           src="https://static.wikia.nocookie.net/onepiece/images/6/6d/Monkey_D._Luffy_Anime_Post_Timeskip_Infobox.png/revision/latest?cb=20240306200817"
+           alt="Monkey D. Luffy">
+    </div>
     <div class="metrics-row">
       <div class="metric-chip">
         <div class="mc-val c-blue"  id="mTotal">—</div>
