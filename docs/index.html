@@ -381,9 +381,10 @@
     .back-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
     .result-title-row {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 16px;
+      padding: 8px 0 4px;
     }
     .result-title-text { flex: 1; min-width: 0; }
     .result-eyebrow {
@@ -404,14 +405,14 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 24px 0 16px;
+      flex-shrink: 0;
     }
     .luffy-img {
-      width: 200px;
-      height: auto;
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
       display: block;
-      background: transparent;
-      filter: drop-shadow(0 6px 20px rgba(0,0,0,.6));
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,.5));
     }
     .metrics-row {
       display: grid;
@@ -660,15 +661,15 @@
       </svg>
       Back
     </button>
-    <div class="luffy-center">
-      <img class="luffy-img"
-           src="https://w7.pngwing.com/pngs/374/713/png-transparent-monkey-d-luffy-t-shirt-straw-hat-one-piece-t-shirt-hat-piracy-wood-thumbnail.png"
-           alt="Monkey D. Luffy">
-    </div>
     <div class="result-title-row">
       <div class="result-title-text">
         <div class="result-eyebrow">Schedule Analysis</div>
         <div class="result-h1">Rest Period<br>Breakdown</div>
+      </div>
+      <div class="luffy-center">
+        <img class="luffy-img"
+             src="rest-time.png"
+             alt="Rest Time">
       </div>
     </div>
     <div class="metrics-row">
