@@ -402,32 +402,20 @@
     }
     .luffy-wrap {
       position: relative;
-      width: 140px;
-      height: 140px;
+      width: 120px;
+      height: 120px;
+      overflow: hidden;
       flex-shrink: 0;
-      align-self: flex-end;
+      align-self: center;
     }
     .luffy-img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      object-position: center top;
-      display: block;
-      filter:
-        drop-shadow(0 0 18px rgba(255,200,60,.22))
-        drop-shadow(0 4px 12px rgba(0,0,0,.55));
-    }
-    .luffy-wrap::after {
-      content: '';
+      width: auto;
+      height: 270%;
       position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      background: radial-gradient(
-        ellipse at center,
-        transparent 50%,
-        var(--bg) 100%
-      );
-      pointer-events: none;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,.5));
     }
     .metrics-row {
       display: grid;
@@ -683,7 +671,7 @@
       </div>
       <div class="luffy-wrap">
         <img class="luffy-img"
-             src="https://static.wikia.nocookie.net/onepiece/images/a/a8/Luffy_4th_Eyecatcher_Face.png/revision/latest?cb=20160626071305"
+             src="https://w7.pngwing.com/pngs/15/198/png-transparent-one-piece-monkey-d-luffy-sitting-illustration-monkey-d-luffy-gol-d-roger-shanks-one-piece-chibi-chibi-child-black-hair-hand-thumbnail.png"
              alt="Monkey D. Luffy">
       </div>
     </div>
