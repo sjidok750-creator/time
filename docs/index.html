@@ -400,12 +400,15 @@
       letter-spacing: -1px;
       line-height: 1.1;
     }
+    .luffy-wrap {
+      flex-shrink: 0;
+      align-self: flex-end;
+    }
     .luffy-img {
       width: 130px;
-      height: 130px;
-      object-fit: contain;
-      flex-shrink: 0;
-      filter: drop-shadow(0 6px 18px rgba(255,180,30,.30));
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,.5));
     }
     .metrics-row {
       display: grid;
@@ -659,9 +662,11 @@
         <div class="result-eyebrow">Schedule Analysis</div>
         <div class="result-h1">Rest Period<br>Breakdown</div>
       </div>
-      <img class="luffy-img"
-           src="https://static.wikia.nocookie.net/onepiece/images/6/6d/Monkey_D._Luffy_Anime_Post_Timeskip_Infobox.png/revision/latest?cb=20240306200817"
-           alt="Monkey D. Luffy">
+      <div class="luffy-wrap">
+        <img class="luffy-img"
+             src="https://w7.pngwing.com/pngs/15/198/png-transparent-one-piece-monkey-d-luffy-sitting-illustration-monkey-d-luffy-gol-d-roger-shanks-one-piece-chibi-chibi-child-black-hair-hand-thumbnail.png"
+             alt="Monkey D. Luffy">
+      </div>
     </div>
     <div class="metrics-row">
       <div class="metric-chip">
