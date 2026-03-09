@@ -400,12 +400,34 @@
       letter-spacing: -1px;
       line-height: 1.1;
     }
-    .luffy-img {
-      width: 130px;
-      height: 130px;
-      object-fit: contain;
+    .luffy-wrap {
+      position: relative;
+      width: 140px;
+      height: 140px;
       flex-shrink: 0;
-      filter: drop-shadow(0 6px 18px rgba(255,180,30,.30));
+      align-self: flex-end;
+    }
+    .luffy-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center top;
+      display: block;
+      filter:
+        drop-shadow(0 0 18px rgba(255,200,60,.22))
+        drop-shadow(0 4px 12px rgba(0,0,0,.55));
+    }
+    .luffy-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(
+        ellipse at center,
+        transparent 50%,
+        var(--bg) 100%
+      );
+      pointer-events: none;
     }
     .metrics-row {
       display: grid;
@@ -659,9 +681,11 @@
         <div class="result-eyebrow">Schedule Analysis</div>
         <div class="result-h1">Rest Period<br>Breakdown</div>
       </div>
-      <img class="luffy-img"
-           src="https://static.wikia.nocookie.net/onepiece/images/6/6d/Monkey_D._Luffy_Anime_Post_Timeskip_Infobox.png/revision/latest?cb=20240306200817"
-           alt="Monkey D. Luffy">
+      <div class="luffy-wrap">
+        <img class="luffy-img"
+             src="https://static.wikia.nocookie.net/onepiece/images/a/a8/Luffy_4th_Eyecatcher_Face.png/revision/latest?cb=20160626071305"
+             alt="Monkey D. Luffy">
+      </div>
     </div>
     <div class="metrics-row">
       <div class="metric-chip">
