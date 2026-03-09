@@ -1,7 +1,7 @@
 // ── DEPLOY VERSION ──────────────────────────────────────────
 // 배포할 때마다 이 날짜를 업데이트하면 자동으로 새 캐시가 생성됩니다.
 // Update this date on every deploy to bust the cache.
-const DEPLOY = '4e8e1f2f';
+const DEPLOY = 'afbb955e';
 const CACHE  = 'rest-v' + DEPLOY;
 
 const PRECACHE = [
